@@ -1,0 +1,33 @@
+       .navbar{
+        background-color:black;
+        }
+        .navbar-brand{
+        font-size:15px;
+        color:white;
+        hover:pointer;
+
+    }
+    .usersignupheader{
+        font-size:20px;
+        color:black;
+        background-color:lightblue;
+        padding-top:20px;
+        text-align:center;
+
+    }
+    #customersignup{
+        padding-bottom:10px;
+    }
+    #signupbutton{
+        float:right;
+    }
+    .errorlist li {
+        background-color:red;
+        color:white;
+        list-style-type:none;
+        padding:4px;
+    }
+    #editcustomerprofile{
+
+    }
+

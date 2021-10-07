@@ -1,0 +1,46 @@
+{% extends '../master/home.html'%}
+{% load static %}
+{%  block 'title'%} Caretaker||Login {% endblock %}
+
+{% block 'css' %}
+<style>
+   .container-fluid{
+       background-image:url({% static 'images/bg.jpg' %});
+       margin-top:5px;
+       padding:20vh;
+       background-size:cover;
+    }
+
+</style>
+
+{% endblock %}
+
+{% block 'body' %}
+
+<div class="container-fluid" >
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-12 col-sm-12">
+            <div class="card">
+                <div class="card-header ">
+                    <div class="usersignupheader">
+                            <p id="customersignup">Caretaker Login Panel </p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% include 'includes/flash-messages.html' %}
+                    <form action="{% url 'caretakerlogin' %}" method="Post">
+                        {% csrf_token %}
+                        {{form.as_p}}
+                        <button class="btn btn-success"id="signupbutton" >Login</button>
+
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+{% endblock %}
