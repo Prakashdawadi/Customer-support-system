@@ -11,7 +11,8 @@ urlpatterns= [
     #caretaker signup
     path('caretaker/signup',views.caretakerSignup,name='caretakersignup'),
     path('caretaker/signin',views.caretakerLogin,name="caretakerlogin"),
-    path('caretaker/dashboard',views.caretakerDashboard,name='caretakerdashboard')
+    path('caretaker/dashboard',views.caretakerDashboard,name='caretakerdashboard'),
+    path('caretaker/logout',views.caretakerLogout,name='caretakerlogout')
 
 
 ]

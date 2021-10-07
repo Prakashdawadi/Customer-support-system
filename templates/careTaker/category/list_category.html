@@ -1,0 +1,45 @@
+{% extends '../../caretaker/includes/dashboardhome.html' %}
+  {% load static %}
+      {% block 'title' %}Caretaker||List-category  {% endblock %}
+                {% block 'body' %}
+                <div class="container-fluid">
+                    {% include 'includes/flash-messages.html' %}
+                    <div id="dashboardcustomer" >
+                        <h3 id="customerDashboard">list category section</h3>
+                    </div>
+                        <table class="table ">
+                            <thead class="thead-dark">
+                            <tr>
+                                <th  scope="col">sn</th>
+                                <th>category</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for cats in category %}
+                            <tr>
+                                <td>{{cats.id}}</td>
+                                <td>{{cats.category}}</td>
+                                <td>{{cats.status}}</td>
+                                <td>
+                                    <a href="" class="btn btn-warning rounded-circle"><i class="fa fa-pen " title="edit" ></i></a>
+                                    <form action="{% url 'delete_category' cats.id %}" method="POST" class="d-inline">
+                                        {% csrf_token %}
+
+                                        <button type="submit" onclick= "return confirm(Are you sure want to delete {{cats.category}} category)" class="btn btn-danger rounded-circle "><i class="fa fa-trash" data-toggle="tooltip"  title="delete"></i></button>
+
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+
+                        </div>
+
+            {% endblock %}
+        {% block "script" %}
+        {% endblock %}
+

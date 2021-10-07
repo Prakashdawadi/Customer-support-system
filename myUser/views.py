@@ -55,12 +55,13 @@ def customerLogin(request):
         'form': loginForm
     }
     if loginForm.is_valid():
-
         email = loginForm.cleaned_data['email']
         password = loginForm.cleaned_data['password']
-        is_customer = 1
-        is_caretaker = 0
         user = authenticate(email=email,password=password)
+        user_info = User.objects.get(email=email)
+        if not user_info.is_customer:
+            messages.add_message(request, messages.ERROR, 'you r not a customer')
+            return render(request, 'customer/login.html', data)
         if user is not None:
             login(request, user)
             messages.add_message(request,messages.SUCCESS,' welcome to the dashboard')
@@ -74,7 +75,11 @@ def customerLogin(request):
 
 @login_required(login_url='customerlogin')
 def customerDashboard(request):
-    return render(request,'customer/dashboard.html')
+    if request.user.is_customer:
+        return render(request,'customer/dashboard.html')
+    else:
+        return redirect('caretakerdashboard')
+
 
 @login_required(login_url='customerlogin')
 def customerLogout(request):
@@ -117,7 +122,7 @@ def EditcustomerProfile(request,id):
 
 def caretakerSignup(request):
     if request.user.is_authenticated:
-        return redirect('customerdashboard')
+        return redirect('caretakerdashboard')
     form = UserCreationForm(request.POST or None)
     data = {
         'form': form
@@ -152,28 +157,40 @@ def caretakerSignup(request):
 
 def caretakerLogin(request):
     if request.user.is_authenticated:
-        return redirect('customerdashboard')
+        return redirect('caretakerdashboard')
     loginForm = LoginForm(request.POST or None)
     data = {
         'form': loginForm
     }
     if loginForm.is_valid():
-
         email = loginForm.cleaned_data['email']
         password = loginForm.cleaned_data['password']
-        is_customer = 1
-        is_caretaker = 0
         user = authenticate(email=email, password=password)
+        user_info = User.objects.get(email=email)
+        if not user_info.is_Caretaker:
+            messages.add_message(request, messages.ERROR, 'you r not a Caretaker')
+            return render(request, 'caretaker/login.html', data)
         if user is not None:
             login(request, user)
-            messages.add_message(request, messages.SUCCESS, ' welcome to the dashboard')
+            messages.add_message(request, messages.SUCCESS, ' welcome to the caretaker dashboard')
             return redirect('caretakerdashboard')
         else:
-            messages.add_message(request, messages.ERROR, "Credentials doesnot Match ")
+            messages.add_message(request, messages.ERROR, "Credentials does not Match ")
             return render(request, 'caretaker/login.html', data)
 
     return render(request, 'caretaker/login.html', data)
 
+@login_required(login_url='caretakerlogin')
 def caretakerDashboard(request):
-    pass
+    if request.user.is_Caretaker:
+        return render(request,'caretaker/dashboard.html')
+    else:
+
+        return redirect('customerdashboard')
+
+@login_required(login_url='caretakerlogin')
+def caretakerLogout(request):
+    logout(request)
+    messages.add_message(request,messages.SUCCESS,"Thank you taking and helping our customer")
+    return redirect('caretakerlogin')
 

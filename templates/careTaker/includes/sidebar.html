@@ -5,7 +5,7 @@
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
                 <div class="sidebar-brand-icon rotate-n-15">
                 </div>
-                <div class="sidebar-brand-text mx-3">Customer Support System</div>
+                <div class="sidebar-brand-text mx-3">Caretaker dashboard</div>
             </a>
 
             <!-- Divider -->
@@ -23,7 +23,7 @@
 
             <!-- Heading -->
             <div class="sidebar-heading">
-                Ticket section
+                Category Section
             </div>
 
             <!-- Nav Item - Pages Collapse Menu -->
@@ -31,13 +31,13 @@
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                     aria-expanded="true" aria-controls="collapseTwo">
                     <i class="fas fa-book" aria-hidden="true"></i>
-                    <span>Tickets</span>
+                    <span>Category</span>
                 </a>
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Ticket info</h6>
-                        <a class="collapse-item" href="#">create ticket</a>
-                        <a class="collapse-item" href="#">My tickets</a>
+                        <a class="collapse-item" href="{% url 'create_category' %}">create Category</a>
+                        <a class="collapse-item" href="{% url 'list_category' %}">List Category</a>
                     </div>
                 </div>
             </li>
