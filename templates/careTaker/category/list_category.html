@@ -27,7 +27,7 @@
                                     <form action="{% url 'delete_category' cats.id %}" method="POST" class="d-inline">
                                         {% csrf_token %}
 
-                                        <button type="submit" onclick= "return confirm(Are you sure want to delete {{cats.category}} category)" class="btn btn-danger rounded-circle "><i class="fa fa-trash" data-toggle="tooltip"  title="delete"></i></button>
+                                        <button type="submit" onclick= "return confirm('Are you sure want to delete {{cats.category}} category')" class="btn btn-danger rounded-circle "><i class="fa fa-trash" data-toggle="tooltip"  title="delete"></i></button>
 
                                     </form>
                                 </td>
