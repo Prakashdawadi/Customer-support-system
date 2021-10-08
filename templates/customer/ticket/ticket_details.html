@@ -10,18 +10,55 @@
           </style>
           {% endblock %}
                 {% block 'body' %}
-                <div class="container-fluid">
-                      <div id="dashboardcustomer" >
-                        <h3 id="customerDashboard">My Ticket Details</h3>
-                    </div>
-                    <hr>
-                    {% include 'includes/flash-messages.html' %}
-                    <div col-4>
-                        lohjkdhjhdjfhdshfg
+<div class="container-fluid">
+    <div id="dashboardcustomer">
+        <h3 id="customerDashboard">My Ticket Details</h3>
+    </div>
+    <hr>
+    {% include 'includes/flash-messages.html' %}
+    <div class="card">
+        <div class="card-header ">
+            <div class="usersignupheader">
+
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class=" col-4">
+                    <div class="d-block p-2 text-dark">subject:</div>
+                    <div class="d-block p-2  text-dark">description:</div>
+                    <div class="d-block p-2  text-dark">created_by:</div>
+                    <div class="d-block p-2  text-dark">created_at:</div>
+                    <div class="d-block p-2  text-dark">caretaker-name:</div>
+                    <div class="d-block p-2  text-dark">priority:</div>
+                    <div class="d-block p-2  text-dark">images:</div>
+
+                </div>
+                <div class=" col-8">
+                    <div class="d-block p-2  text-dark">{{ticketInfo.subject}}</div>
+                    <div class="d-block p-2  text-dark">{{ticketInfo.description}}</div>
+                    <div class="d-block p-2  text-dark">{{ticketInfo.created_by_id}}</div>
+                    <div class="d-block p-2  text-dark">{{ticketInfo.created_at|timesince}} ago</div>
+                    <div class="d-block p-2  text-dark">subham</div>
+                    <div class="d-block p-2  text-dark "><span class="badge badge-success">low</span>
+                    {% if ticketInfo.image %}
+                    <div class="d-block p-2  text-dark"><img src="{{MEDIA_URL}}{{ticketInfo.image.url}}" height="100"width="100"></div>
+                    {% else %}
+                     <div class="d-block p-2  text-dark">no image</div>
+                    {% endif %}
+
                     </div>
 
+                </div>
+            </div>
 
-                        </div>
+
+        </div>
+
+    </div>
+
+
+</div>
 
             {% endblock %}
         {% block "script" %}

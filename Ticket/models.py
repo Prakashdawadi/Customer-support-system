@@ -20,10 +20,15 @@ class ticketAssign(models.Model):
     ticketId    = models.ForeignKey(User,on_delete=models.CASCADE,null=True,)
     caretakerId = models.ForeignKey(User,on_delete=models.CASCADE,related_name='caretaker_id',null=True,blank=True)
     customerId  = models.ForeignKey(User,on_delete=models.CASCADE,related_name='customer_id',null=True,blank=True)
+    status  = models.BooleanField(default=1)
     assigned_at = models.DateTimeField(auto_now_add=True)
+
 
     def __int__(self):
         return self.ticketId
+    class Meta:
+        db_table = 'ticket_assign'
+       # unique_together = ('ticketId','caretakerId')
 
 class ticketConversation(models.Model):
     ticketId = models.ForeignKey(Ticket, on_delete=models.PROTECT,null=True,blank=True)

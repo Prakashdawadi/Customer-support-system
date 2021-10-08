@@ -13,6 +13,7 @@
                         <thead class="thead-dark">
                         <tr>
                             <th scope="col">sn</th>
+                            <th scope="col">db_id</th>
                             <th>subject</th>
                             <th>decription</th>
                             <th>Image</th>
@@ -24,9 +25,12 @@
 
                         {% for t in ticketList %}
                         <tr>
+                            <td>{{forloop.counter}}</td>
                             <td>{{t.id}}</td>
                             <td>{{t.subject}}</td>
+                            {% autoescape off %}
                             <td>{{t.description|truncatewords:5}} <a href="">Read More</a></td>
+                            {% endautoescape  %}
                             {% if t.image %}
                             <td>
                                 <img src="{{t.image.url}}" height="50" width="50" alt="">

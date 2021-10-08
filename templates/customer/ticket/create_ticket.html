@@ -28,6 +28,11 @@
                         </div>
 
             {% endblock %}
-        {% block "script" %}
+        {% block 'js' %}
+        <script>
+      tinymce.init({
+        selector: '#id_description'
+      });
+      </script>
         {% endblock %}
 

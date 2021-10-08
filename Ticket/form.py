@@ -1,5 +1,7 @@
 from django import forms
 from .models import Ticket, ticketAssign,ticketConversation
+from Category.models import Category, status
+
 
 class ticketForm(forms.ModelForm):
     subject = forms.CharField(
@@ -13,16 +15,18 @@ class ticketForm(forms.ModelForm):
     description = forms.CharField(
        label= 'Description', required=False, min_length=3,max_length=100, widget=forms.Textarea(
             attrs={
-                'class':'form form-control',
-                 'placeholder':'enter the description',
-                 'row':10,
-                 'col':5,
+                'class': 'form form-control',
+
+
             }
         )
     )
     image = forms.FileField(required=False)
-    #category = forms.CharField(label="choose the category",widget=forms.Select(attrs={'class':'form form-control'}))
+    category = forms.ModelChoiceField(
+        label="choose the category", required=True,
+        widget=forms.Select( attrs={'class': 'form-control'}),
+        queryset=Category.objects.all().filter(status='active'))
 
     class Meta:
         model = Ticket
-        fields = ['subject','description','category','image']
+        fields = ['subject','description','image','category']
