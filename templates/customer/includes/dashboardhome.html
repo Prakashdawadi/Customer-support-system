@@ -29,7 +29,11 @@
     <!-- Page Wrapper -->
     <div id="wrapper">
         <!-- Sidebar -->
+        {% if request.user.is_Caretaker %}
+        {% include 'careTaker/includes/sidebar.html' %}
+        {% else %}
         {% include 'customer/includes/sidebar.html' %}
+        {% endif %}
         <!--end of sidebar-->
 
         <!-- Content Wrapper -->

@@ -20,9 +20,7 @@
             <th>Action</th>
         </tr>
         </thead>
-
         <tbody>
-
         {% for t in ticketList %}
         <tr>
             <td>{{forloop.counter}}</td>
@@ -40,37 +38,79 @@
                 empty image
                 <img src="" alt="">
             </td>
-
             {% endif %}
             <td>
-                <h1>{{assigned}}</h1>
-
                 <a href="{% url 'view_details' t.id %}" class="btn btn-primary rounded-circle"><i class="fa fa-eye "
                                                                                                   title="Details info"></i></a>
-                {% if ticket_info %}
-                 <a href="" class="badge badge-secondary">assigned<i class="fa " title="Details info"></i></a>
-                {% else %}
-                <a href="{% url 'ticket_assign' t.id request.user.id %}" class="btn btn-success rounded-circle"><i class="fa fa-user-plus " title="Details info"></i></a>
-                {% endif %}
-
-                <!--<form action="" method="POST" class="d-inline">
+                <form action="{% url 'ticket_assign' %}" method="POST" class="d-inline">
                     {% csrf_token %}
-
+                    <input type="hidden" value="{{t.id}}" name="ticket">
+                    <input type="hidden" value="{{request.user.id}}" name="caretaker">
+                    <input type="hidden" value="{{t.created_by_id}}" name="customer">
                     <button type="submit"
-                            onclick="return confirm('Are you sure want to delete  category')"
-                            class="btn btn-danger rounded-circle "><i class="fa fa-trash"
-                                                                      data-toggle="tooltip" title="delete"></i></button>
-                </form>-->
+                            onclick="return confirm('Are you sure want to assign  category')"
+                            class="btn btn-success rounded-circle "><i class="fa fa-user-plus"
+                                                                      data-toggle="tooltip" title="assign"></i></button>
+                </form>
             </td>
         </tr>
         {% endfor %}
-
         </tbody>
+    </table>
 
-
+     {% elif ticket_info %}
+       <table class="table ">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">sn</th>
+            <th scope="col">db_id</th>
+            <th>subject</th>
+            <th>decription</th>
+            <th>created_by</th>
+            <th>Image</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for t in ticket_info %}
+        <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{t.id}}</td>
+            <td>{{t.subject}}</td>
+            {% autoescape off %}
+            <td>{{t.description|truncatewords:5}} <a href="">Read More</a></td>
+            {% endautoescape %}
+            {% if t.image %}
+            <td>{{t.created_by}}</td>
+            <td>
+                <img src="{{t.image.url}}" height="50" width="50" alt="">
+            </td>
+            {% else %}
+            <td>
+                empty image
+                <img src="" alt="">
+            </td>
+            {% endif %}
+            <td>
+                <a href="{% url 'view_details' t.id %}" class="btn btn-primary rounded-circle"><i class="fa fa-eye "
+                                                                                                  title="Details info"></i></a>
+                <form action="{% url 'ticket_assign' %}" method="POST" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{t.id}}" name="ticket">
+                    <input type="hidden" value="{{request.user.id}}" name="caretaker">
+                    <input type="hidden" value="{{t.created_by_id}}" name="customer">
+                    <button type="submit"
+                            onclick="return confirm('Are you sure want to assign  category')"
+                            class="btn btn-success rounded-circle "><i class="fa fa-user-plus"
+                                                                      data-toggle="tooltip" title="assign"></i></button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
     </table>
     {% else %}
-    <h4>Sorry! you have not issue a ticket yet</h4>
+    <h4>Sorry! you have not issue a ticket yet </h4>
     {% endif %}
 
 </div>

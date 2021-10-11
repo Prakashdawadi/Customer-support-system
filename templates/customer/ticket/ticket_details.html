@@ -6,6 +6,12 @@
               #updatebutton{
               float:right;
               }
+              #msgbutton{
+              float:right
+              }
+
+
+
 
           </style>
           {% endblock %}
@@ -36,10 +42,18 @@
                 </div>
                 <div class=" col-8">
                     <div class="d-block p-2  text-dark">{{ticketInfo.subject}}</div>
+                    {% autoescape off %}
                     <div class="d-block p-2  text-dark">{{ticketInfo.description}}</div>
-                    <div class="d-block p-2  text-dark">{{ticketInfo.created_by_id}}</div>
+                     {% endautoescape %}
+                    <div class="d-block p-2  text-dark">{{ticketInfo.created_by}}</div>
                     <div class="d-block p-2  text-dark">{{ticketInfo.created_at|timesince}} ago</div>
-                    <div class="d-block p-2  text-dark">subham</div>
+                    {% if caretaker %}
+                    {% for assigner in caretaker %}
+                    <div class="d-block p-2  text-dark">{{assigner.caretakerId.name}}</div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="d-block p-2  text-dark">No caretaker assigned yet </div>
+                    {% endif %}
                     <div class="d-block p-2  text-dark "><span class="badge badge-success">low</span>
                     {% if ticketInfo.image %}
                     <div class="d-block p-2  text-dark"><img src="{{MEDIA_URL}}{{ticketInfo.image.url}}" height="100"width="100"></div>
@@ -57,10 +71,34 @@
 
     </div>
 
+    conversation section
+
+
+    <hr>
+    {% if assigner_name %}
+    <form action="{% url 'customer_message' %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="ticket" value="{{ticketInfo.id}}">
+        <input type="hidden" name="customer" value="{{request.user.id}}">
+         {% for assigner in assigner_name %}
+        <input type="hidden" name="caretaker" value="{{assigner.caretakerId_id}}">
+        {% endfor %}
+    <textarea  name="textarea" cols="155" rows="5" placeholder="enter the message" id="description"></textarea>
+
+        <button id="msgbutton" class="btn btn-success">send <i class="fa fa-arrow-right"></i></button>
+        </form>
+    {% endif %}
 
 </div>
 
+
+
             {% endblock %}
-        {% block "script" %}
+        {% block 'js' %}
+    <script type="text/javascript">
+      tinymce.init({
+        selector: '#description'
+      });
+      </script>
         {% endblock %}
 

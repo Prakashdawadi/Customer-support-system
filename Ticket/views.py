@@ -3,7 +3,7 @@ from django.urls import reverse
 from .form import ticketForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from  .models import Ticket,ticketAssign
+from  .models import Ticket,ticketAssign,ticketConversation
 
 # Create your views here.
 
@@ -14,6 +14,7 @@ def createTicket(request):
     if createTicket.is_valid():
         user = createTicket.save()
         user.status= True
+        user.assignStatus =False
         user.created_by_id = request.user.id
         user.save()
         messages.add_message(request,messages.SUCCESS,'ticket is created')
@@ -32,59 +33,151 @@ def listTicket(request):
     }
     return render(request,'customer/ticket/list_ticket.html',data)
 
+# customer view details view
 @login_required(login_url='customerlogin' or 'caretakerlogin')
 def viewDetails(request,id):
     ticketInfo = Ticket.objects.get(id=id)
-    data = {
-        'ticketInfo': ticketInfo
-    }
     if request.user.is_Caretaker:
-        return render(request, 'customer/ticket/ticket_details.html', data)
+        pass
 
-    # to validate that the valid user is searching its details
-    if not request.user.id == ticketInfo.created_by_id:
-        messages.add_message(request,messages.ERROR,'Invalid url')
+    else:
+        if not request.user.id == ticketInfo.created_by_id:
+            messages.add_message(request, messages.ERROR, 'Invalid url')
+            return HttpResponseRedirect(reverse('list_ticket'))
+        else:
+            caretaker_info = ticketAssign.objects \
+                .select_related('caretakerId') \
+                .filter(customerId=request.user.id, ticketId=id)
+            ticketInfo = Ticket.objects.get(id=id)
+            data = {
+                'ticketInfo': ticketInfo,
+                'caretaker': caretaker_info
+            }
+            return render(request, 'customer/ticket/ticket_details.html', data)
 
-        #return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-        return HttpResponseRedirect(reverse('list_ticket'))
 
-        #return redirect('list_ticket')
+
+
+
+
+
+    caretaker_info = ticketAssign.objects.select_related('caretakerId').filter(customerId=request.user.id, ticketId=id)
+    # show messages code section
+    message = ticketConversation.objects.all().filter(ticket_id=id,customer_id=request.user.id)
+    print(message)
+    data = {
+        'ticketInfo': ticketInfo,
+        'assigner_name': caretaker_info,
+        'message': message
+
+    }
+
 
     return render(request,'customer/ticket/ticket_details.html',data)
 
 
 @login_required(login_url='caretakerlogin')
 def incomingTicket(request):
+       # this is for whether the data exists in ticket assign table or not
+        ticket_exists = ticketAssign.objects.select_related('ticketId').exists()
+        if ticket_exists:
+            incoming_ticket = Ticket.objects.filter(assignStatus=False)
+            print(incoming_ticket)
+            data = {
+            'ticket_info':incoming_ticket
+            }
+            return render(request, 'caretaker/tickets/incoming_tickets.html',data)
+        else:
+            ticketList = Ticket.objects.all().filter(status=True).order_by('-id')
+            data = {
+                'ticketList': ticketList,
+            }
+            print("b")
 
-    ticketList = Ticket.objects.all().filter(status=True).order_by('-id')
-    joininfo = ticketAssign.objects.filter(status=True).select_related('ticketId')
-    print(joininfo)
-    # try:
-    #
-    #     data = {
-    #     'ticketList': ticketList,
-    #     'ticket_info':ticket_info
-    #      }
-    #     return render(request,'caretaker/tickets/incoming_tickets.html',data)
-    # except:
-    data = {
-    'ticketList': ticketList,
-     }
-    return render(request, 'caretaker/tickets/incoming_tickets.html', data)
+            return render(request, 'caretaker/tickets/incoming_tickets.html', data)
+
+@login_required(login_url='caretakerlogin')
+def ticketAssigns(request):
+    if request.POST:
+        ticket_id    =  request.POST['ticket']
+        caretaker_id = request.POST['caretaker']
+        customer_id  =  request.POST['customer']
+        print(ticket_id)
+        insert = ticketAssign(ticketId_id=ticket_id,caretakerId_id=caretaker_id,customerId_id = customer_id,  status=True)
+        insert.save()
+        insertStatus = Ticket.objects.get(id=ticket_id)
+        insertStatus.assignStatus = True
+        insertStatus.save()
+        messages.add_message(request, messages.SUCCESS,'successfully assign now you can chat with this customer')
+        return redirect('assign_list')
+
+@login_required(login_url='caretakerlogin')
+def assignList(request):
+    assign_ticket_info = ticketAssign.objects.select_related('ticketId').filter(caretakerId= request.user.id)
+    print(assign_ticket_info)
+    data ={
+        'assign':assign_ticket_info
+    }
+    return render(request,'caretaker/tickets/assign_ticket.html',data)
+
+# view details section by caretaker
+@login_required(login_url='caretakerlogin')
+def assignedTicketviewDetails(request,id):
+
+    if request.user.is_Caretaker:
+        ticketId_exists = ticketAssign.objects.filter(ticketId=id, caretakerId=request.user.id).exists()
+        # with assign view details and display conversation section
+        if (ticketId_exists):
+            ticket_Info = Ticket.objects.get(id=id)
+            caretaker_info = ticketAssign.objects.select_related('caretakerId').filter(caretakerId=request.user.id,ticketId=id)
+            data = {
+                'ticket_info': ticket_Info,
+                'assigner_name':caretaker_info
+
+            }
+            print(caretaker_info)
+
+            return render(request, 'caretaker/tickets/assign_ticket_viewdetails.html', data)
+        else:
+            # without assign view details section
+            ticketInfo = Ticket.objects.get(id=id)
+            data = {
+                'ticketInfo': ticketInfo
+            }
+            return render(request, 'caretaker/tickets/assign_ticket_viewdetails.html', data)
+    else:
+        messages.add_message(request,messages.ERROR,'cannot details at this moment')
+        return redirect(request, 'caretakerdashboard')
+
+
+# message section
+
+@login_required(login_url='customerlogin')
+def customerMessage(request):
+    if request.method == "POST":
+        content = request.POST['textarea']
+        if content == '':
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+            print(request.POST)
+            tickets = request.POST['ticket']
+            caretakers = request.POST['caretaker']
+            customers = request.POST['customer']
+
+            insert = ticketConversation(customer_id_id=customers,
+                                      caretaker_id_id=caretakers,
+                                      ticket_id_id=tickets,
+                                      message=content)
+            insert.save()
+            # messages.add_message(request,messages.success,'added successfully')
+            return redirect('list_ticket')
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 
-def ticketAssigns(request,id,tid):
 
-    print(id)
-    print(tid)
-    insert = ticketAssign(caretakerId_id=id, ticketId_id=tid,status=True)
-    insert.save()
-    ticket_info = ticketAssign.objects.all().get(id=tid, status=True)
-
-    messages.add_message(request, messages.SUCCESS,'successfully assign now you can chat with this customer')
-    return redirect('incoming_ticket')
 
 
 

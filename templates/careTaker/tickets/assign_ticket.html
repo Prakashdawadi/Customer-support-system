@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+{% extends '../../caretaker/includes/dashboardhome.html' %}
+  {% load static %}
+      {% block 'title' %}Caretaker||assign-Tickets {% endblock %}
+                {% block 'body' %}
+<div class="container-fluid">
+    {% include 'includes/flash-messages.html' %}
+    <div id="dashboardcustomer">
+        <h3 id="customerDashboard">assign  ticket list section</h3>
+        <hr>
+    </div>
+    {% if assign %}
+    <table class="table ">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">sn</th>
+            <th scope="col">db_id</th>
+            <th>subject</th>
+            <th>decription</th>
+            <th>created_by</th>
+            <th>Image</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        {% for t in assign %}
+        <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{t.id}}</td>
+            <td>{{t.ticketId.subject}}</td>
+            {% autoescape off %}
+            <td>{{t.ticketId.description|truncatewords:5}} <a href="">Read More</a></td>
+            {% endautoescape %}
+            <td>{{t.ticketId.created_by}}</td>
+            {% if t.ticketId.image %}
+            <td>
+                <img src="{{MEDIA_URL}}{{t.ticketId.image.url}}" height="50" width="50" alt="">
+            </td>
+            {% else %}
+            <td>
+
+                empty image
+                <img src="" alt="">
+            </td>
+
+            {% endif %}
+            <td>
+
+                <a href="{% url 'view_details' t.ticketId_id %}" class="btn btn-primary rounded-circle"><i class="fa fa-eye "
+                                                                                                  title="Details info"></i></a>
+                <span class="badge badge-success">assigned</span>
+            </td>
+        </tr>
+        {% endfor %}
+
+        </tbody>
+
+
+    </table>
+    {% else %}
+    <h4>Sorry! you have not assign  a ticket yet</h4>
+    {% endif %}
+
+</div>
+
+            {% endblock %}
+        {% block "script" %}
+        {% endblock %}
+

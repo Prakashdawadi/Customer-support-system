@@ -32,7 +32,7 @@ class User(AbstractBaseUser):
     address = models.CharField(max_length=30)
     phone_no = models.CharField(max_length=10)
     image = models.ImageField(upload_to='user/',null=True,blank=False)
-    #status = models.CharField(max_length=9,choices=status)
+    #caretaker_status = models.CharField(max_length=9,choices=status)
     is_customer = models.BooleanField(default=False)
     is_Caretaker = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)

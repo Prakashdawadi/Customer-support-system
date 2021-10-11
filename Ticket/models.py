@@ -9,7 +9,9 @@ class Ticket(models.Model):
     category  = models.ForeignKey(Category,models.CASCADE,null=True,blank=True)
     image = models.ImageField(upload_to='ticket/',null=True,blank=True)
     status = models.BooleanField(default=1)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    assignStatus = models.BooleanField(null=True,blank=True)
+    created_by = models.ForeignKey(User, related_name= 'customerId' , on_delete=models.CASCADE, null=True, blank=True)
+    #assigned_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name='caretakerId', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -17,28 +19,28 @@ class Ticket(models.Model):
         return self.subject
 
 class ticketAssign(models.Model):
-    ticketId    = models.ForeignKey(User,on_delete=models.CASCADE,null=True,)
+    ticketId    = models.ForeignKey(Ticket, related_name='assignTicketId',on_delete=models.CASCADE,null=True,blank=True)
     caretakerId = models.ForeignKey(User,on_delete=models.CASCADE,related_name='caretaker_id',null=True,blank=True)
     customerId  = models.ForeignKey(User,on_delete=models.CASCADE,related_name='customer_id',null=True,blank=True)
     status  = models.BooleanField(default=1)
     assigned_at = models.DateTimeField(auto_now_add=True)
 
-
     def __int__(self):
         return self.ticketId
     class Meta:
         db_table = 'ticket_assign'
-       # unique_together = ('ticketId','caretakerId')
+        unique_together = ('ticketId','caretakerId')
 
 class ticketConversation(models.Model):
-    ticketId = models.ForeignKey(Ticket, on_delete=models.PROTECT,null=True,blank=True)
-    message = models.TextField(max_length=30)
-    caretakerId = models.ForeignKey(User, on_delete=models.PROTECT, related_name='caretaker_ids', null=True, blank=True)
-    customerId = models.ForeignKey(User, on_delete=models.PROTECT ,related_name='customer_ids', null=True, blank=True)
+    ticket_id = models.ForeignKey(Ticket, related_name='convoTicketId',on_delete=models.PROTECT,null=True,blank=True)
+    message = models.TextField(max_length=200)
+    caretaker_id = models.ForeignKey(User, on_delete=models.PROTECT, related_name='caretaker_ids', null=True, blank=True)
+    customer_id = models.ForeignKey(User, on_delete=models.PROTECT ,related_name='customer_ids', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __init__(self):
-        return self.ticketId
+
+    def __str__(self):
+        return self.message
 
 
