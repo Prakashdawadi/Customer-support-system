@@ -1,0 +1,30 @@
+{% extends '../customer/includes/dashboardhome.html' %}
+  {% load static %}
+      {% block 'title' %}Caretaker||EditProfile  {% endblock %}
+          {% block 'css' %}
+          <style>
+              #updatebutton{
+              float:right;
+              }
+          </style>
+          {% endblock %}
+                {% block 'body' %}
+                <div class="container-fluid">
+                      <div id="dashboardcustomer" >
+                        <h3 id="customerDashboard">Edit your Profile</h3>
+                    </div>
+                    {% include 'includes/flash-messages.html' %}
+                    <form action="" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        {{ form.as_p }}
+                        <button id="updatebutton" class="btn btn-sm btn-success">Update <i class="fa fa-paper-plane"></i></button>
+
+                    </form>
+
+                        </div>
+
+            {% endblock %}
+        {% block "script" %}
+        {% endblock %}
+

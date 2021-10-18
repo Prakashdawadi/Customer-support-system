@@ -19,6 +19,7 @@ class CustomerProfile(forms.ModelForm):
             'max': 10,
 
         }))
+    image = forms.ImageField(required=False)
 
     address = forms.CharField(
         widget=forms.TextInput(attrs={
@@ -28,18 +29,17 @@ class CustomerProfile(forms.ModelForm):
             'min': 5,
         }))
 
-
     class Meta:
-        model = User
-        fields = ['name','phone_no','address']
+       model = User
+       fields = ['name', 'phone_no', 'image', 'address']
+
 
 class LoginForm(forms.Form):
     email = forms.EmailField(
-        widget=forms.EmailInput(
-            attrs={
-                'class':'form form-control',
-                'placeholder':'enter your email',
-    }))
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'enter your email',
+        }))
 
     password = forms.CharField(
         widget=forms.PasswordInput(

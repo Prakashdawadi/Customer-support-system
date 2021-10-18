@@ -90,6 +90,8 @@ def customerLogout(request):
 @login_required(login_url='customerlogin')
 def EditcustomerProfile(request,id):
     #p = get_object_or_404(User,id=id)
+    print(request.POST)
+    print(request.FILES)
     if not id==request.user.id:
         messages.add_message(request,messages.ERROR,"Invalid url")
         #return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -106,7 +108,7 @@ def EditcustomerProfile(request,id):
     if request.POST:
         if (check == True and length == 10):
         # form is now complete valid
-            form = CustomerProfile(request.POST,instance=user_id)
+            form = CustomerProfile(request.POST, request.FILES or None, instance=user_id)
             if form.is_valid():
                 user = form.save()
                 messages.add_message(request, messages.SUCCESS, "user updated")
@@ -194,3 +196,40 @@ def caretakerLogout(request):
     messages.add_message(request,messages.SUCCESS,"Thank you taking and helping our customer")
     return redirect('caretakerlogin')
 
+
+@login_required(login_url='caretakerlogin')
+def EditCaretakerProfile(request,id):
+    #p = get_object_or_404(User,id=id)
+    print(request.POST)
+    print(request.FILES)
+    if not id==request.user.id:
+        messages.add_message(request,messages.ERROR,"Invalid url")
+        #return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        return redirect('caretakerdashboard')
+    user_id = User.objects.get(id=id)
+    form = CustomerProfile(instance=user_id)
+    data = {
+        'form':form
+    }
+    contact_no = str(request.POST.get('phone_no'))
+    check = contact_no.isdigit()
+
+    length = len(str(contact_no))
+    if request.POST:
+        if (check == True and length == 10):
+        # form is now complete valid
+            form = CustomerProfile(request.POST, request.FILES or None, instance=user_id)
+            if form.is_valid():
+                user = form.save()
+                messages.add_message(request, messages.SUCCESS, "user updated")
+                return redirect('caretakerdashboard')
+
+        else:
+            messages.add_message(request, messages.ERROR, "User contact number will be of 10 digits")
+            return render(request, 'caretaker/caretakerprofiles.html', data)
+
+    return render(request, 'caretaker/caretakerprofiles.html',data)
+
+@login_required(login_url='caretakerlogin')
+def  caretakerChangePassword(request,id):
+    return render(request, 'caretaker/change_password.html')

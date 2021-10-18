@@ -8,11 +8,14 @@ urlpatterns= [
     path('customer/logout',views.customerLogout,name='customerlogout'),
     path('customer/editprofile/<int:id>/',views.EditcustomerProfile,name='customerprofiles'),
 
+
     #caretaker signup
     path('caretaker/signup',views.caretakerSignup,name='caretakersignup'),
     path('caretaker/signin',views.caretakerLogin,name="caretakerlogin"),
     path('caretaker/dashboard',views.caretakerDashboard,name='caretakerdashboard'),
-    path('caretaker/logout',views.caretakerLogout,name='caretakerlogout')
+    path('caretaker/edit-profile/<int:id>/',views.EditCaretakerProfile,name='caretakerprofiles'),
+    path('caretaker/logout',views.caretakerLogout,name='caretakerlogout'),
+    path('caretaker/change-password/<int:id>/',views.caretakerChangePassword,name='caretakerchangepassword'),
 
 
 ]
