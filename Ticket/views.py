@@ -1,4 +1,4 @@
-from django.shortcuts import render,HttpResponse,redirect,HttpResponseRedirect
+from django.shortcuts import render,HttpResponse,redirect,HttpResponseRedirect,get_object_or_404
 from django.urls import reverse
 from .form import ticketForm
 from django.contrib.auth.decorators import login_required
@@ -38,43 +38,76 @@ def listTicket(request):
 def viewDetails(request,id):
     ticketInfo = Ticket.objects.get(id=id)
     if request.user.is_Caretaker:
-        pass
 
-    else:
-        if not request.user.id == ticketInfo.created_by_id:
-            messages.add_message(request, messages.ERROR, 'Invalid url')
-            return HttpResponseRedirect(reverse('list_ticket'))
+        #Cartakers also view the details of all incoming tickets but not assign tickets
+        caretakerAassignedOrNot = ticketAssign.objects .select_related('caretakerId') .filter(caretakerId=request.user.id, ticketId=id)
+        ticketInfo = Ticket.objects.get(id=id)
+        if caretakerAassignedOrNot:
+             messages_info= ticketConversation.objects.all().filter(ticket_id=id)
+             print(messages_info.count())
+             counts= messages_info.count()
+             if counts == 1:
+                 data = {
+                 'ticketInfo': ticketInfo,
+                 'caretakerAssignedornot': caretakerAassignedOrNot,
+                 'messages_info':messages_info,
+                  'counts':counts
+                  }
+                 return render(request, 'customer/ticket/ticket_details.html', data)
+             else:
+                 data = {
+                     'ticketInfo': ticketInfo,
+                     'caretakerAssignedornot': caretakerAassignedOrNot,
+                     'messages_info': messages_info,
+                 }
+                 return render(request, 'customer/ticket/ticket_details.html', data)
+
+             return render(request, 'customer/ticket/ticket_details.html', data)
         else:
-            caretaker_info = ticketAssign.objects \
-                .select_related('caretakerId') \
-                .filter(customerId=request.user.id, ticketId=id)
-            ticketInfo = Ticket.objects.get(id=id)
             data = {
-                'ticketInfo': ticketInfo,
-                'caretaker': caretaker_info
+               'ticketInfo': ticketInfo,
+               'caretakerassign': caretakerAassignedOrNot
             }
             return render(request, 'customer/ticket/ticket_details.html', data)
+    else:
+        try:
+            print('before_try')
+            key = get_object_or_404(Ticket,pk=id)
+
+            if not request.user.id == ticketInfo.created_by_id:
+                messages.add_message(request, messages.ERROR, 'Invalid url')
+                return HttpResponseRedirect(reverse('list_ticket'))
+            else:
+                #user can also view the chatting box after being assigned so check whether that ticket is assigned or not
+                caretaker_info = ticketAssign.objects \
+                .select_related('caretakerId') \
+                .filter(customerId=request.user.id, ticketId=id)
+                ticketInfo = Ticket.objects.get(id=id)
+                messages_info = ticketConversation.objects.all().filter(ticket_id=id)
+
+                counts = messages_info.count()
+                if counts == 1:
+                    data = {
+                        'ticketInfo': ticketInfo,
+                        'caretaker': caretaker_info,
+                        'messages_info': messages_info,
+                        'counts':counts
+                    }
+                    return render(request, 'customer/ticket/ticket_details.html', data)
+                else:
+                    data = {
+                        'ticketInfo': ticketInfo,
+                        'caretaker': caretaker_info,
+                        'messages_info': messages_info,
+                    }
+                    return render(request, 'customer/ticket/ticket_details.html', data)
+                return render(request, 'customer/ticket/ticket_details.html', data)
+        except Exception as e:
+            print("exceptss")
+            messages.add_message(request, messages.ERROR, e)
+            return redirect('list_ticket')
 
 
-
-
-
-
-
-
-    caretaker_info = ticketAssign.objects.select_related('caretakerId').filter(customerId=request.user.id, ticketId=id)
-    # show messages code section
-    message = ticketConversation.objects.all().filter(ticket_id=id,customer_id=request.user.id)
-    print(message)
-    data = {
-        'ticketInfo': ticketInfo,
-        'assigner_name': caretaker_info,
-        'message': message
-
-    }
-
-
-    return render(request,'customer/ticket/ticket_details.html',data)
 
 
 @login_required(login_url='caretakerlogin')
@@ -121,58 +154,61 @@ def assignList(request):
     }
     return render(request,'caretaker/tickets/assign_ticket.html',data)
 
-# view details section by caretaker
-@login_required(login_url='caretakerlogin')
-def assignedTicketviewDetails(request,id):
-
-    if request.user.is_Caretaker:
-        ticketId_exists = ticketAssign.objects.filter(ticketId=id, caretakerId=request.user.id).exists()
-        # with assign view details and display conversation section
-        if (ticketId_exists):
-            ticket_Info = Ticket.objects.get(id=id)
-            caretaker_info = ticketAssign.objects.select_related('caretakerId').filter(caretakerId=request.user.id,ticketId=id)
-            data = {
-                'ticket_info': ticket_Info,
-                'assigner_name':caretaker_info
-
-            }
-            print(caretaker_info)
-
-            return render(request, 'caretaker/tickets/assign_ticket_viewdetails.html', data)
-        else:
-            # without assign view details section
-            ticketInfo = Ticket.objects.get(id=id)
-            data = {
-                'ticketInfo': ticketInfo
-            }
-            return render(request, 'caretaker/tickets/assign_ticket_viewdetails.html', data)
-    else:
-        messages.add_message(request,messages.ERROR,'cannot details at this moment')
-        return redirect(request, 'caretakerdashboard')
+# # view details section by caretaker
+# @login_required(login_url='caretakerlogin')
+# def assignedTicketviewDetails(request,id):
+#
+#     if request.user.is_Caretaker:
+#         ticketId_exists = ticketAssign.objects.filter(ticketId=id, caretakerId=request.user.id).exists()
+#         # with assign view details and display conversation section
+#         if (ticketId_exists):
+#             ticket_Info = Ticket.objects.get(id=id)
+#             caretaker_info = ticketAssign.objects.select_related('caretakerId').filter(caretakerId=request.user.id,ticketId=id)
+#             data = {
+#                 'ticket_info': ticket_Info,
+#                 'assigner_name':caretaker_info
+#
+#             }
+#             print(caretaker_info)
+#
+#             return render(request, 'caretaker/tickets/assign_ticket_viewdetails.html', data)
+#         else:
+#             # without assign view details section
+#             ticketInfo = Ticket.objects.get(id=id)
+#             data = {
+#                 'ticketInfo': ticketInfo
+#             }
+#             return render(request, 'caretaker/tickets/assign_ticket_viewdetails.html', data)
+#     else:
+#         messages.add_message(request,messages.ERROR,'cannot details at this moment')
+#         return redirect(request, 'caretakerdashboard')
 
 
 # message section
 
-@login_required(login_url='customerlogin')
+@login_required(login_url='customerlogin or caretakerlogin')
 def customerMessage(request):
+    print(request.POST)
+
     if request.method == "POST":
         content = request.POST['textarea']
         if content == '':
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-            print(request.POST)
-            tickets = request.POST['ticket']
-            caretakers = request.POST['caretaker']
-            customers = request.POST['customer']
+        print(request.POST)
+        tickets = request.POST['ticket']
+        caretakers = request.POST['caretaker']
+        customers = request.POST['customer']
 
-            insert = ticketConversation(customer_id_id=customers,
+        insert = ticketConversation(customer_id_id=customers,
                                       caretaker_id_id=caretakers,
                                       ticket_id_id=tickets,
-                                      message=content)
-            insert.save()
+                                      message=content,
+                                    msg_created_by_id = request.user.id)
+        insert.save()
             # messages.add_message(request,messages.success,'added successfully')
-            return redirect('list_ticket')
-
+        return redirect('view_details',tickets)
+    messages.add_message(request,messages.ERROR,'cannot add msg')
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 

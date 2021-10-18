@@ -1,6 +1,8 @@
 {% extends '../../customer/includes/dashboardhome.html' %}
   {% load static %}
-      {% block 'title' %}Customer||Ticket-details  {% endblock %}
+
+      {% block 'title' %}Ticket-details||customer support {% endblock %}
+
           {% block 'css' %}
           <style>
               #updatebutton{
@@ -10,8 +12,18 @@
               float:right
               }
 
-
-
+              #msg_container{
+              border:4px solid black;
+              overflow-y:auto;
+              height:250px"
+              }
+              .left-message{
+              background-color:yellow;
+              margin-top:80px;
+              }
+               .right-message{
+              background-color:black
+              }
 
           </style>
           {% endblock %}
@@ -28,9 +40,10 @@
 
             </div>
         </div>
+
         <div class="card-body">
             <div class="row">
-                <div class=" col-4">
+                <div class=" col-lg-2 col-sm-6 col-md-6">
                     <div class="d-block p-2 text-dark">subject:</div>
                     <div class="d-block p-2  text-dark">description:</div>
                     <div class="d-block p-2  text-dark">created_by:</div>
@@ -40,13 +53,19 @@
                     <div class="d-block p-2  text-dark">images:</div>
 
                 </div>
-                <div class=" col-8">
+                <div class=" col-lg-4 col-sm-6 col-md-6">
                     <div class="d-block p-2  text-dark">{{ticketInfo.subject}}</div>
                     {% autoescape off %}
                     <div class="d-block p-2  text-dark">{{ticketInfo.description}}</div>
                      {% endautoescape %}
                     <div class="d-block p-2  text-dark">{{ticketInfo.created_by}}</div>
                     <div class="d-block p-2  text-dark">{{ticketInfo.created_at|timesince}} ago</div>
+                    {% if caretakerAssignedornot %}
+                     {% for assigner in caretakerAssignedornot %}
+                    <div class="d-block p-2  text-dark">{{assigner.caretakerId.name}}</div>
+                    {% endfor %}
+                    {% endif %}
+
                     {% if caretaker %}
                     {% for assigner in caretaker %}
                     <div class="d-block p-2  text-dark">{{assigner.caretakerId.name}}</div>
@@ -64,41 +83,112 @@
                     </div>
 
                 </div>
+                <div class="col-lg-6 col-sm-12 col-md-12">
+                    {% if messages_info %}
+<!--                    this section is used for display the first message in proper-->
+                     {% if counts %}
+                     {% endif %}
+                    <h5>Conversation section</h5>
+                    <div class="container-fluid" id="msg_container" style="border:4px solid black;overflow-y:bottom;height:250px">
+                        {% for m in messages_info %}
+                        {% ifnotequal m.msg_created_by_id request.user.id %}
+                        <div class="row left-message">
+                            <div class="col-sm-6 col-lg-5 col-md-6">
+                                {% autoescape off %}
+                                <span> {{m.message}}</span>
+                                {% endautoescape %}
+                            </div>
+                        </div>
+                        <div class="row left-time ">
+                            <div class="col-sm-6 col-lg-12 col-md-6">
+                                {{m.created_at|timesince}}
+                            </div>
+                        </div>
+                        <hr>
+                        {% else %}
+                        {% if counts %}
+                        sinfle
+                        <div class="row right-message" style="margin-top:125px;">
+                            <div class="offset-8">
+                                {% autoescape off %}
+                                <span> {{m.message}}</span>
+                                {% endautoescape %}
+                            </div>
+                        </div>
+                        <div class="row right-time">
+                            <div class="offset-8">
+                                {{m.created_at|timesince}} ago
+                            </div>
+                        </div>
+
+                         {% else %}
+                         <div class="row right-message">
+                            <div class="offset-8">
+                                {% autoescape off %}
+                                <span> {{m.message}}</span>
+                                {% endautoescape %}
+                            </div>
+                        </div>
+                        <div class="row right-time">
+                            <div class="offset-8">
+                                {{m.created_at|timesince}} ago
+                            </div>
+                        </div>
+                        {% endif%}
+                        {% endifnotequal %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% if caretaker %}
+                    <hr>
+                 <!-- customer section-->
+
+                <form action="{% url 'customer_message' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="ticket" value="{{ticketInfo.id}}">
+                <input type="hidden" name="customer" value="{{request.user.id}}">
+                 {% for assigner in caretaker %}
+                <input type="hidden" name="caretaker" value="{{assigner.caretakerId_id}}">
+                {% endfor %}
+                <textarea  name="textarea" cols="155" rows="5" placeholder="enter the message" id="description"></textarea>
+                <hr>
+                <button id="msgbutton" class="btn btn-success">send <i class="fa fa-arrow-right"></i></button>
+                </form>
+                 {% endif %}
+                     <!-- caretaker section-->
+                    {% if caretakerAssignedornot %}
+
+                    <form action="{% url 'customer_message' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="ticket" value="{{ticketInfo.id}}">
+                <input type="hidden" name="customer" value="{{request.user.id}}">
+                 {% for assigner in caretakerAssignedornot %}
+                <input type="hidden" name="caretaker" value="{{assigner.caretakerId_id}}">
+                {% endfor %}
+                <textarea  name="textarea" cols="155" rows="5" placeholder="enter the message" id="description"></textarea>
+                <hr>
+                 <button>closed ticket</button>
+                <button id="msgbutton" class="btn btn-success">send <i class="fa fa-arrow-right"></i></button>
+                </form>
+
+                    {% endif %}
+
+                </div>
             </div>
 
-
         </div>
-
     </div>
-
-    conversation section
-
-
     <hr>
-    {% if assigner_name %}
-    <form action="{% url 'customer_message' %}" method="POST">
-        {% csrf_token %}
-        <input type="hidden" name="ticket" value="{{ticketInfo.id}}">
-        <input type="hidden" name="customer" value="{{request.user.id}}">
-         {% for assigner in assigner_name %}
-        <input type="hidden" name="caretaker" value="{{assigner.caretakerId_id}}">
-        {% endfor %}
-    <textarea  name="textarea" cols="155" rows="5" placeholder="enter the message" id="description"></textarea>
-
-        <button id="msgbutton" class="btn btn-success">send <i class="fa fa-arrow-right"></i></button>
-        </form>
-    {% endif %}
 
 </div>
 
 
-
-            {% endblock %}
-        {% block 'js' %}
-    <script type="text/javascript">
-      tinymce.init({
-        selector: '#description'
+{% endblock %}
+{% block 'js' %}
+<script type="text/javascript">
+ tinymce.init({
+      selector: '#description'
       });
-      </script>
-        {% endblock %}
+  </script>
+{% endblock %}
 
