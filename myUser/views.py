@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect,HttpResponse,get_object_or_404,HttpResponseRedirect
-from .form import UserCreationForm,LoginForm,CustomerProfile
+from .form import UserCreationForm,LoginForm,CustomerProfile,changePasswordForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
@@ -231,5 +231,33 @@ def EditCaretakerProfile(request,id):
     return render(request, 'caretaker/caretakerprofiles.html',data)
 
 @login_required(login_url='caretakerlogin')
-def  caretakerChangePassword(request,id):
-    return render(request, 'caretaker/change_password.html')
+def  caretakerChangePassword(request):
+    form = changePasswordForm()
+
+    data = {
+        'form' :form
+    }
+
+    # if request.method == "POST" and request.POST :
+    #     oldPassword =  request.POST['old_password']
+    #     newPassword = request.POST['new_password']
+    #     confirmPassword = request.POST['confirm_password']
+    #     if oldPassword == '' or newPassword ==  '' or confirmPassword == '' :
+    #         messages.add_message(request,messages.ERROR,'Fields should not empty')
+    #         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    #
+    #     if len(str(newPassword)) < 5:
+    #         messages.add_message(request, messages.ERROR, 'new password should be of length 5')
+    #
+    #         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    #     if newPassword!=confirmPassword:
+    #         messages.add_message(request, messages.ERROR, 'new pass word and confrm password must be same')
+    #
+    #         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+
+
+
+
+    return render(request, 'caretaker/change_password.html',data)

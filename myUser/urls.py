@@ -10,12 +10,12 @@ urlpatterns= [
 
 
     #caretaker signup
+
     path('caretaker/signup',views.caretakerSignup,name='caretakersignup'),
     path('caretaker/signin',views.caretakerLogin,name="caretakerlogin"),
     path('caretaker/dashboard',views.caretakerDashboard,name='caretakerdashboard'),
     path('caretaker/edit-profile/<int:id>/',views.EditCaretakerProfile,name='caretakerprofiles'),
     path('caretaker/logout',views.caretakerLogout,name='caretakerlogout'),
-    path('caretaker/change-password/<int:id>/',views.caretakerChangePassword,name='caretakerchangepassword'),
-
+    path('caretaker/change-password/',views.caretakerChangePassword,name='caretakerchangepassword'),
 
 ]
