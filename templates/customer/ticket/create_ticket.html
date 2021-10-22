@@ -13,6 +13,7 @@
                 <div class="container-fluid">
                       <div id="dashboardcustomer" >
                         <h3 id="customerDashboard">create your Ticket</h3>
+                           <a class="collapse-item btn btn-primary " href="{% url 'list_ticket' %}">My Tickets</a>
                     </div>
                     {% include 'includes/flash-messages.html' %}
                     <form action="{% url 'create_ticket' %}" method="POST" enctype="multipart/form-data">

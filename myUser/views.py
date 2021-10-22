@@ -58,7 +58,12 @@ def customerLogin(request):
         email = loginForm.cleaned_data['email']
         password = loginForm.cleaned_data['password']
         user = authenticate(email=email,password=password)
-        user_info = User.objects.get(email=email)
+        try:
+            user_info = User.objects.get(email=email)
+        except Exception as e:
+            messages.add_message(request, messages.ERROR, "Sorry! your email address is wrong")
+            return render(request, 'customer/login.html', data)
+
         if not user_info.is_customer:
             messages.add_message(request, messages.ERROR, 'you r not a customer')
             return render(request, 'customer/login.html', data)
@@ -69,6 +74,8 @@ def customerLogin(request):
         else:
             messages.add_message(request,messages.ERROR,"Credentials doesnot Match ")
             return render(request,'customer/login.html',data)
+
+
 
 
     return render(request,'customer/login.html',data)
@@ -169,7 +176,12 @@ def caretakerLogin(request):
         email = loginForm.cleaned_data['email']
         password = loginForm.cleaned_data['password']
         user = authenticate(email=email, password=password)
-        user_info = User.objects.get(email=email)
+        try:
+            user_info = User.objects.get(email=email)
+        except Exception as e:
+            messages.add_message(request, messages.ERROR, "Sorry! your email address is wrong")
+            return render(request, 'caretaker/login.html', data)
+
         if not user_info.is_Caretaker:
             messages.add_message(request, messages.ERROR, 'you r not a Caretaker')
             return render(request, 'caretaker/login.html', data)

@@ -6,10 +6,11 @@
                     {% include 'includes/flash-messages.html' %}
                     <div id="dashboardcustomer" >
                         <h3 id="customerDashboard">List ticket section</h3>
+                         <a class="collapse-item btn btn-primary" href="{% url 'create_ticket' %}">Create Ticket</a>
                         <hr>
                     </div>
                     {% if ticketList %}
-                    <table class="table ">
+                    <table class="table  table-hover">
                         <thead class="thead-dark">
                         <tr>
                             <th scope="col">sn</th>
