@@ -112,16 +112,21 @@ def viewDetails(request,id):
 
 @login_required(login_url='caretakerlogin')
 def incomingTicket(request):
+
+       # to view the incoming ticket the caretaker must be online or available or no busy
+       if request.user.is_Caretaker and request.user.caretaker_status == 'busy':
+           return render(request, 'caretaker/tickets/incoming_tickets.html')
+
        # this is for whether the data exists in ticket assign table or not
-        ticket_exists = ticketAssign.objects.select_related('ticketId').exists()
-        if ticket_exists:
+       ticket_exists = ticketAssign.objects.select_related('ticketId').exists()
+       if ticket_exists:
             incoming_ticket = Ticket.objects.filter(assignStatus=False)
             print(incoming_ticket)
             data = {
             'ticket_info':incoming_ticket
             }
             return render(request, 'caretaker/tickets/incoming_tickets.html',data)
-        else:
+       else:
             ticketList = Ticket.objects.all().filter(status=True).order_by('-id')
             data = {
                 'ticketList': ticketList,
@@ -136,7 +141,11 @@ def ticketAssigns(request):
         ticket_id    =  request.POST['ticket']
         caretaker_id = request.POST['caretaker']
         customer_id  =  request.POST['customer']
-        print(ticket_id)
+        already_assign = ticketAssign.objects.filter(ticketId_id = ticket_id).exists()
+        if already_assign:
+            print(already_assign)
+            messages.add_message(request,messages.ERROR,'this ticket is already been assign by another caretaker')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         insert = ticketAssign(ticketId_id=ticket_id,caretakerId_id=caretaker_id,customerId_id = customer_id,  status=True)
         insert.save()
         insertStatus = Ticket.objects.get(id=ticket_id)

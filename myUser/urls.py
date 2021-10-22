@@ -17,5 +17,6 @@ urlpatterns= [
     path('caretaker/edit-profile/<int:id>/',views.EditCaretakerProfile,name='caretakerprofiles'),
     path('caretaker/logout',views.caretakerLogout,name='caretakerlogout'),
     path('caretaker/change-password/',views.caretakerChangePassword,name='caretakerchangepassword'),
+    path('caretaker/change-status/',views.changeStatus,name="changestatus"),
 
 ]

@@ -53,17 +53,21 @@ class changePasswordForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['old_password','password','confirm_password']
+        fields = ['old_password','password']
     # sanitize your change your  password input  section
 
 
-    def clean(self):
+    def clean(self,*args,**kwargs):
+
         cleaned_data = super(changePasswordForm, self).clean()
         password = cleaned_data.get('password')
         confirm_password = cleaned_data.get('confirm_password')
+        print(password)
+
 
         if password != confirm_password:
-            self.add_error('confirm_password', "Sorry! password does not match ")
+            self.add_error(self,'password', "Sorry! password does not match ")
+
 
         return cleaned_data
 
@@ -132,15 +136,15 @@ class UserCreationForm(forms.ModelForm):
         fields = ['name','email','phone_no','address','password']
         
         #sanitize the user input section
-    def clean(self):
-        cleaned_data = super(UserCreationForm,self).clean()
-        password = cleaned_data.get('password')
-        confirm_password = cleaned_data.get('confirm_password')
-
-        if password != confirm_password :
-            self.add_error('confirm_password',"Sorry! password does not match ")
-
-        return cleaned_data
+    # def clean(self):
+    #     cleaned_data = super(UserCreationForm,self).clean()
+    #     password = cleaned_data.get('password')
+    #     confirm_password = cleaned_data.get('confirm_password')
+    #
+    #     if password != confirm_password :
+    #         self.add_error('confirm_password',"Sorry! password does not match ")
+    #
+    #     return cleaned_data
 
     def save(self, commit=True):
         user = super(UserCreationForm, self).save(commit=commit)

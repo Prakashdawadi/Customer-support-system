@@ -30,6 +30,7 @@ class ticketAssign(models.Model):
     class Meta:
         db_table = 'ticket_assign'
         unique_together = ('ticketId','caretakerId')
+        unique_together =('ticketId','customerId')
 
 class ticketConversation(models.Model):
     ticket_id = models.ForeignKey(Ticket, related_name='convoTicketId',on_delete=models.PROTECT,null=True,blank=True)

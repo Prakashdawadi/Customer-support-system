@@ -145,6 +145,7 @@ def caretakerSignup(request):
                 user.is_customer = False
                 user.is_Caretaker = True
                 user.set_password(request.POST.get('password'))
+                user.caretaker_status= "available"
                 user.save()
                 messages.add_message(request, messages.SUCCESS, "Sign up successfully")
                 return redirect('caretakerlogin')
@@ -185,6 +186,7 @@ def caretakerLogin(request):
 @login_required(login_url='caretakerlogin')
 def caretakerDashboard(request):
     if request.user.is_Caretaker:
+
         return render(request,'caretaker/dashboard.html')
     else:
 
@@ -233,7 +235,18 @@ def EditCaretakerProfile(request,id):
 @login_required(login_url='caretakerlogin')
 def  caretakerChangePassword(request):
     form = changePasswordForm()
+    print(request.POST)
+    oldPassword=request.POST.get('old_password')
+    newPassword=request.POST.get('new_password')
+    confirmPassword=request.POST.get('confirm_password')
+    # if oldPassword == '' or newPassword == '' or confirmPassword == '':
+    #     messages.add_message(request,messages.ERROR,'Fields should not empty')
+    #     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+
+    # if newPassword!=confirmPassword:
+    #     messages.add_message(request, messages.ERROR, 'new pass word and confrm password must be same')
+    #     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     data = {
         'form' :form
     }
@@ -248,7 +261,6 @@ def  caretakerChangePassword(request):
     #
     #     if len(str(newPassword)) < 5:
     #         messages.add_message(request, messages.ERROR, 'new password should be of length 5')
-    #
     #         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     #     if newPassword!=confirmPassword:
     #         messages.add_message(request, messages.ERROR, 'new pass word and confrm password must be same')
@@ -256,8 +268,15 @@ def  caretakerChangePassword(request):
     #         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-
-
-
-
     return render(request, 'caretaker/change_password.html',data)
+
+login_required(login_url='caretakerlogin')
+def changeStatus(request):
+    if request.method =="POST" and request.POST and request.user.is_Caretaker:
+
+        change_status = User.objects.get(pk=request.user.id)
+        change_status.caretaker_status=request.POST.get('status')
+        change_status.save()
+        print(request.POST)
+        print(change_status)
+    return redirect('caretakerdashboard')

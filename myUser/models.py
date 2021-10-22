@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,BaseUserManager
-#status = (('available','available'),('busy','busy'))
+status = (('available','available'),('busy','busy'))
 
 # Create your models here.
 class UserManager(BaseUserManager):
@@ -32,7 +32,7 @@ class User(AbstractBaseUser):
     address = models.CharField(max_length=30)
     phone_no = models.CharField(max_length=10)
     image = models.ImageField(upload_to='user/',null=True,blank=False)
-    #caretaker_status = models.CharField(max_length=9,choices=status)
+    caretaker_status = models.CharField(max_length=9,choices=status,null=True,blank=True)
     is_customer = models.BooleanField(default=False)
     is_Caretaker = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
