@@ -84,6 +84,8 @@
 
                 </div>
                 <div class="col-lg-6 col-sm-12 col-md-12">
+
+                    {% if ticket_status   %}
                     {% if messages_info %}
 <!--                    this section is used for display the first message in proper-->
                      {% if counts %}
@@ -167,9 +169,21 @@
                 {% endfor %}
                 <textarea  name="textarea" cols="155" rows="5" placeholder="enter the message" id="description"></textarea>
                 <hr>
-                 <button>closed ticket</button>
+
                 <button id="msgbutton" class="btn btn-success">send <i class="fa fa-arrow-right"></i></button>
+
                 </form>
+                    <div class="row">
+                          <form action="{% url 'close_ticket'  %}" method="POST">
+                              {% csrf_token %}
+                              <input type="hidden" name="ticketId" value="{{ticketInfo.id}}">
+                 <button onclick="return confirm ('Alert once you close the ticket it cannot be undo')" class="btn btn-danger">closed ticket</button>(*one the ticket is closeed it cannot be undo )
+                          </form>
+                    </div>
+
+                    {% endif %}
+                    {% else %}
+                    <h3>Ticket is closed</h3>
 
                     {% endif %}
 

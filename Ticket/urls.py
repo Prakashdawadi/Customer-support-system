@@ -10,5 +10,6 @@ urlpatterns = [
     path('caretaker/incoming-ticket',views.incomingTicket,name='incoming_ticket'),
     path('caretaker/ticket-assign/',views.ticketAssigns,name='ticket_assign'),
     path('caretaker/my-assign-list',views.assignList,name='assign_list'),
-    path('customer/send-message',views.customerMessage,name='customer_message')
+    path('customer/send-message',views.customerMessage,name='customer_message'),
+    path('carateker/close-ticket',views.closeTicket,name='close_ticket')
 ]

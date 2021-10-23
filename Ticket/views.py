@@ -45,13 +45,16 @@ def viewDetails(request,id):
         if caretakerAassignedOrNot:
              messages_info= ticketConversation.objects.all().filter(ticket_id=id)
              print(messages_info.count())
+             print(ticketInfo.status)
              counts= messages_info.count()
              if counts == 1:
                  data = {
                  'ticketInfo': ticketInfo,
                  'caretakerAssignedornot': caretakerAassignedOrNot,
                  'messages_info':messages_info,
-                  'counts':counts
+                 'counts':counts,
+                 'ticket_status':ticketInfo.status,
+
                   }
                  return render(request, 'customer/ticket/ticket_details.html', data)
              else:
@@ -59,6 +62,7 @@ def viewDetails(request,id):
                      'ticketInfo': ticketInfo,
                      'caretakerAssignedornot': caretakerAassignedOrNot,
                      'messages_info': messages_info,
+                     'ticket_status':ticketInfo.status,
                  }
                  return render(request, 'customer/ticket/ticket_details.html', data)
 
@@ -84,6 +88,8 @@ def viewDetails(request,id):
                 .filter(customerId=request.user.id, ticketId=id)
                 ticketInfo = Ticket.objects.get(id=id)
                 messages_info = ticketConversation.objects.all().filter(ticket_id=id)
+                print("hello")
+                print(ticketInfo.status)
 
                 counts = messages_info.count()
                 if counts == 1:
@@ -91,7 +97,8 @@ def viewDetails(request,id):
                         'ticketInfo': ticketInfo,
                         'caretaker': caretaker_info,
                         'messages_info': messages_info,
-                        'counts':counts
+                        'counts':counts,
+
                     }
                     return render(request, 'customer/ticket/ticket_details.html', data)
                 else:
@@ -99,6 +106,7 @@ def viewDetails(request,id):
                         'ticketInfo': ticketInfo,
                         'caretaker': caretaker_info,
                         'messages_info': messages_info,
+
                     }
                     return render(request, 'customer/ticket/ticket_details.html', data)
                 return render(request, 'customer/ticket/ticket_details.html', data)
@@ -220,7 +228,14 @@ def customerMessage(request):
     messages.add_message(request,messages.ERROR,'cannot add msg')
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+@login_required(login_url="caretakerlogin")
+def closeTicket(request):
+    print(request.POST.get('ticketId'))
+    ticket_info  = Ticket.objects.filter(pk=request.POST.get('ticketId')).update(status=False)
 
+
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 

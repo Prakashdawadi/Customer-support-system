@@ -23,7 +23,7 @@
                                 <td>{{cats.category}}</td>
                                 <td>{{cats.status}}</td>
                                 <td>
-                                    <a href="" class="btn btn-warning rounded-circle"><i class="fa fa-pen " title="edit" ></i></a>
+                                    <a href="{% url 'edit_category' cats.id %}" class="btn btn-warning rounded-circle"><i class="fa fa-pen " title="edit" ></i></a>
                                     <form action="{% url 'delete_category' cats.id %}" method="POST" class="d-inline">
                                         {% csrf_token %}
 

@@ -30,7 +30,7 @@ def listCategory(request):
     }
     return render(request,'caretaker/category/list_category.html',data)
 
-# @login_required(login_url='caretakerlogin')
+@login_required(login_url='caretakerlogin')
 def deleteCategory(request,id):
     user_info = Category.objects.get(id=id)
     if not user_info:
@@ -40,6 +40,35 @@ def deleteCategory(request,id):
     if delete_data:
         messages.add_message(request, messages.ERROR, "category has been deleted")
         return redirect('list_category')
+@login_required(login_url="caretakerlogin")
+def editCategory(request,id):
+
+    try:
+        find_id = Category.objects.get(id=id)
+        form = categoryForm(request.POST or None, instance=find_id)
+        title = len (str(request.POST.get('category')))
+        if title == '' or  title <4:
+            messages.add_message(request, messages.ERROR, "title mustnot be empty and of 4 length")
+        if form.is_valid():
+            update = form.save()
+            messages.add_message(request, messages.SUCCESS, "updated successfully")
+            return redirect("list_category")
+
+
+        data = {
+            'form':form
+        }
+
+        return render(request,'caretaker/category/edit_category.html',data)
+    except Exception as e:
+         messages.add_message(request,messages.ERROR, e)
+         return redirect("list_category")
+
+    return render(request,'caretaker/category/edit_category.html')
+
+
+
+
 
 
 

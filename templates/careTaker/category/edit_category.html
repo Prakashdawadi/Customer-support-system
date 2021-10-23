@@ -1,0 +1,42 @@
+{% extends '../../caretaker/includes/dashboardhome.html' %}
+  {% load static %}
+      {% block 'title' %}Caretaker||edit-category   {% endblock %}
+                {% block 'body' %}
+                <div class="container-fluid">
+                    <div id="dashboardcustomer" >
+
+                        <h3 id="customerDashboard">edit Category section</h3>
+                        <hr>
+                    </div>
+                    <div class="container-fluid">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-7 col-sm-12 col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 id="createcategory" >create category</h6>
+                                        <div class="card-body">
+                                            <form action="" method="POST">
+                                                {% csrf_token %}
+                                                {% include 'includes/flash-messages.html' %}
+                                                {{form.as_p}}
+                                                <button style="float:right" class="btn btn-success">update <i class="fa fa-paper-plane"></i> </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+
+                        </div>
+
+            {% endblock %}
+        {% block "script" %}
+        {% endblock %}
+

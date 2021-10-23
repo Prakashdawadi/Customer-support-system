@@ -218,7 +218,6 @@ def EditCaretakerProfile(request,id):
     print(request.FILES)
     if not id==request.user.id:
         messages.add_message(request,messages.ERROR,"Invalid url")
-        #return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         return redirect('caretakerdashboard')
     user_id = User.objects.get(id=id)
     form = CustomerProfile(instance=user_id)
