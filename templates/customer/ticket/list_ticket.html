@@ -48,7 +48,7 @@
                                                                                      title="Details info"></i></a>
                                 <a href="" class="btn btn-warning rounded-circle"><i class="fa fa-pen "
                                                                                      title="edit"></i></a>
-                                <form action="" method="POST" class="d-inline">
+                                <form action="{% url 'delete_ticket' t.id  %}" method="POST" class="d-inline">
                                     {% csrf_token %}
 
                                     <button type="submit"

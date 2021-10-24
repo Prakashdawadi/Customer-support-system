@@ -33,11 +33,11 @@ class ticketAssign(models.Model):
         unique_together =('ticketId','customerId')
 
 class ticketConversation(models.Model):
-    ticket_id = models.ForeignKey(Ticket, related_name='convoTicketId',on_delete=models.PROTECT,null=True,blank=True)
+    ticket_id = models.ForeignKey(Ticket, related_name='convoTicketId',on_delete=models.CASCADE,null=True,blank=True)
     message = models.TextField(max_length=200)
-    caretaker_id = models.ForeignKey(User, on_delete=models.PROTECT, related_name='caretaker_ids', null=True, blank=True)
-    customer_id = models.ForeignKey(User, on_delete=models.PROTECT,related_name='customer_ids', null=True, blank=True)
-    msg_created_by = models.ForeignKey(User, on_delete=models.PROTECT,related_name='msg_id', null=True, blank=True)
+    caretaker_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='caretaker_ids', null=True, blank=True)
+    customer_id = models.ForeignKey(User, on_delete=models.CASCADE,related_name='customer_ids', null=True, blank=True)
+    msg_created_by = models.ForeignKey(User, on_delete=models.CASCADE,related_name='msg_id', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

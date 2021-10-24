@@ -6,10 +6,12 @@ from . import views
 urlpatterns = [
     path('customer/create-ticket',views.createTicket,name='create_ticket'),
     path('customer/list-ticket',views.listTicket,name='list_ticket'),
+    path('customer/delete-ticket/<int:id>/',views.deleteTicket,name='delete_ticket'),
     path('view-details/<int:id>',views.viewDetails,name='view_details'),
     path('caretaker/incoming-ticket',views.incomingTicket,name='incoming_ticket'),
     path('caretaker/ticket-assign/',views.ticketAssigns,name='ticket_assign'),
     path('caretaker/my-assign-list',views.assignList,name='assign_list'),
     path('customer/send-message',views.customerMessage,name='customer_message'),
     path('carateker/close-ticket',views.closeTicket,name='close_ticket')
+
 ]

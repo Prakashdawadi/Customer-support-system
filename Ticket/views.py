@@ -204,6 +204,16 @@ def assignList(request):
 #         messages.add_message(request,messages.ERROR,'cannot details at this moment')
 #         return redirect(request, 'caretakerdashboard')
 
+@login_required(login_url="customerlogin")
+def deleteTicket(request,id):
+    if request.user.is_customer:
+        findId = Ticket.objects.get(pk=id)
+        print(findId)
+        findId.delete();
+        messages.add_message(request,messages.SUCCESS,"Tickets has been deleted successfully")
+        return redirect('list_ticket')
+
+    return redirect('customerlogin')
 
 # message section
 
@@ -236,8 +246,6 @@ def customerMessage(request):
 def closeTicket(request):
     print(request.POST.get('ticketId'))
     ticket_info  = Ticket.objects.filter(pk=request.POST.get('ticketId')).update(status=False)
-
-
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
