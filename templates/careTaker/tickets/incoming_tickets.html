@@ -40,6 +40,7 @@
             {% autoescape off %}
             <td>{{t.description|truncatewords:5}} <a href="">Read More</a></td>
             {% endautoescape %}
+             <td>{{t.created_by}}</td>
             {% if t.image %}
             <td>
                 <img src="{{t.image.url}}" height="50" width="50" alt="">
@@ -91,8 +92,9 @@
             {% autoescape off %}
             <td>{{t.description|truncatewords:5}} <a href="">Read More</a></td>
             {% endautoescape %}
-            {% if t.image %}
             <td>{{t.created_by}}</td>
+            {% if t.image %}
+
             <td>
                 <img src="{{t.image.url}}" height="50" width="50" alt="">
             </td>

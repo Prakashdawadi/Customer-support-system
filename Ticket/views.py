@@ -42,6 +42,10 @@ def viewDetails(request,id):
         #Cartakers also view the details of all incoming tickets but not assign tickets
         caretakerAassignedOrNot = ticketAssign.objects .select_related('caretakerId') .filter(caretakerId=request.user.id, ticketId=id)
         ticketInfo = Ticket.objects.get(id=id)
+        if not ticketInfo.status:
+            messages.add_message(request, messages.ERROR, "the ticket is closed")
+            return redirect('assign_list')
+
         if caretakerAassignedOrNot:
              messages_info= ticketConversation.objects.all().filter(ticket_id=id)
              print(messages_info.count())
