@@ -215,6 +215,41 @@ def deleteTicket(request,id):
 
     return redirect('customerlogin')
 
+@login_required(login_url="customerlogin")
+def editTicket(request,id):
+    try:
+        findId = get_object_or_404(Ticket,pk=id)
+        if not request.user.id == findId.created_by_id:
+            messages.add_message(request, messages.SUCCESS, "invalid-urls")
+            return render(request, 'customer/ticket/edit_ticket.html')
+        form =ticketForm(instance=findId)
+        data = {
+            'form':form
+        }
+        if request.method == "POST":
+            #print(request.POST)
+            title = str(request.POST.get('subject'))
+            title_length = len(title)
+            print(title)
+            description = len(str(request.POST.get('description')))
+            if title == '' or title_length<5:
+                messages.add_message(request, messages.ERROR, "Title should not empty and must be of 4 letter")
+                return render(request, 'customer/ticket/edit_ticket.html',data)
+
+            form = ticketForm(request.POST or None, request.FILES or None,instance=findId)
+            if form.is_valid():
+                form.save()
+                messages.add_message(request, messages.SUCCESS, 'Ticket has been updated successfully')
+                return redirect('list_ticket')
+
+        return render(request, 'customer/ticket/edit_ticket.html', data)
+    except  Exception as e:
+        messages.add_message(request, messages.SUCCESS, e)
+        return render(request, 'customer/ticket/edit_ticket.html')
+
+
+    return render(request,'customer/edit_ticket.html')
+
 # message section
 
 @login_required(login_url='customerlogin or caretakerlogin')

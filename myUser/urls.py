@@ -8,6 +8,8 @@ urlpatterns= [
     path('customer/logout',views.customerLogout,name='customerlogout'),
     path('customer/editprofile/<int:id>/',views.EditcustomerProfile,name='customerprofiles'),
 
+    path('caretaker/change-password/',views.ChangePassword,name='change_password'),
+
 
     #caretaker signup
 
@@ -16,7 +18,7 @@ urlpatterns= [
     path('caretaker/dashboard',views.caretakerDashboard,name='caretakerdashboard'),
     path('caretaker/edit-profile/<int:id>/',views.EditCaretakerProfile,name='caretakerprofiles'),
     path('caretaker/logout',views.caretakerLogout,name='caretakerlogout'),
-    path('caretaker/change-password/',views.caretakerChangePassword,name='caretakerchangepassword'),
+
     path('caretaker/change-status/',views.changeStatus,name="changestatus"),
 
 ]

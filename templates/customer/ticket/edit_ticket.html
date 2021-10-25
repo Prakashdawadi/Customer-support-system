@@ -1,6 +1,6 @@
 {% extends '../../customer/includes/dashboardhome.html' %}
   {% load static %}
-      {% block 'title' %}Customer||createTicket  {% endblock %}
+      {% block 'title' %}Customer||editTicket  {% endblock %}
           {% block 'css' %}
           <style>
               #updatebutton{
@@ -20,13 +20,13 @@
                     </div>
                     <hr>
                     {% include 'includes/flash-messages.html' %}
-                    <form action="{% url 'create_ticket' %}" method="POST" enctype="multipart/form-data">
+                    <form action="" method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
-                        {{ticket_info.as_p}}
+                        {{form.as_p}}
                         <hr>
 
                         <button type="reset" class="btn btn-danger">reset <i class="fas fa-refresh"></i></button>
-                        <button type="submit" id="updatebutton" class="btn btn-sm btn-success">createTicket<i class="fa fa-paper-plane"></i></button>
+                        <button type="submit" id="updatebutton" class="btn btn-sm btn-success">update<i class="fa fa-paper-plane"></i></button>
 
                     </form>
 

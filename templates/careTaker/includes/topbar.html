@@ -1,6 +1,6 @@
  <!-- Topbar -->
  {% load static %}
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                <nav class="navbar navbar-expand navbar-light bg-dark topbar mb-4 static-top shadow">
 
                     <!-- Sidebar Toggle (Topbar) -->
                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
@@ -172,21 +172,21 @@
                         <li class="nav-item dropdown no-arrow">
 
 
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                            <a class="nav-link dropdown-toggle " href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{user.name}}</span>
 
                                 {% if user.image %}
-                                <img class="img-profile rounded-circle"
+                                <img class="img-profile rounded-circle mr-2"
                                     src="{{MEDIA_URL}}{{user.image.url}}">
                                 {% else %}
-                                 <img class="img-profile rounded-circle"
+                                 <img class="img-profile rounded-circle mr-2"
                                     src="{% static 'images/default_image.png' %}">
                                 {% endif  %}
                                 {% if request.user.caretaker_status == "available" %}
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><button class="btn btn-sm btn-circle btn-success" style="border-radius:100px;height:20px; width:20px;"></button></span>
+                                <span class="mr-1 d-none d-lg-inline text-gray-600 small"><button class="btn btn-sm btn-circle btn-success" title="active" style="border-radius:100px;height:20px; width:20px;"></button></span>
                                 {% else %}
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><button class="btn btn-sm btn-circle btn-danger" style="border-radius:100px;height:20px; width:20px;"></button></span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><button class="btn btn-sm btn-circle btn-danger" title="busy" style="border-radius:100px;height:20px; width:20px;"></button></span>
                                 {%  endif %}
 
 

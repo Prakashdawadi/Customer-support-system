@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from myUser.models import User
+from django.contrib.auth.hashers import check_password
 
 
 # Create your views here.
@@ -13,7 +14,7 @@ from myUser.models import User
 # customer sections
 def customerSignup(request):
     if request.user.is_authenticated:
-       return redirect('customerdashboard')
+        return redirect('customerdashboard')
     form = UserCreationForm(request.POST or None)
     data = {
         'form': form
@@ -75,9 +76,6 @@ def customerLogin(request):
             messages.add_message(request,messages.ERROR,"Credentials doesnot Match ")
             return render(request,'customer/login.html',data)
 
-
-
-
     return render(request,'customer/login.html',data)
 
 @login_required(login_url='customerlogin')
@@ -97,8 +95,6 @@ def customerLogout(request):
 @login_required(login_url='customerlogin')
 def EditcustomerProfile(request,id):
     #p = get_object_or_404(User,id=id)
-    print(request.POST)
-    print(request.FILES)
     if not id==request.user.id:
         messages.add_message(request,messages.ERROR,"Invalid url")
         #return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -291,3 +287,32 @@ def changeStatus(request):
         print(request.POST)
         print(change_status)
     return redirect('caretakerdashboard')
+
+@login_required(login_url="caretakelogin" or 'customerlogin')
+def ChangePassword(request):
+    form = changePasswordForm()
+    data= {
+        'form':form
+    }
+    if request.method=="POST":
+       old_pass = request.POST.get('old_password')
+       new_pass = str(request.POST.get('password'))
+       len_pass =len(new_pass)
+       confirm_pass = request.POST.get('confirm_password')
+       print(old_pass)
+       print(new_pass)
+       print(confirm_pass)
+       findUser = User.objects.get(pk=request.user.id)
+       check_old_pass = check_password(old_pass,request.user.password)
+       print(check_old_pass)
+       if check_old_pass==False :
+           messages.add_message(request,messages.ERROR,'Incorrect  old password')
+           return render(request,'customer/change_password.html',data)
+       if new_pass == '' or len_pass <6:
+           messages.add_message(request, messages.ERROR, 'password field must not be empty and of 5 character')
+           return render(request, 'customer/change_password.html', data)
+       if new_pass != confirm_pass:
+           messages.add_message(request, messages.ERROR, 'new password and confirm password does not match')
+           return render(request, 'customer/change_password.html', data)
+
+    return render(request ,'customer/change_password.html',data)
