@@ -1,17 +1,17 @@
 {% extends '../../customer/includes/dashboardhome.html' %}
   {% load static %}
-      {% block 'title' %}Customer||List-Tickets  {% endblock %}
+      {% block 'title' %}Customer||Solved-Tickets  {% endblock %}
                 {% block 'body' %}
                 <div class="container-fluid ">
                     {% include 'includes/flash-messages.html' %}
-                          <div class="row" id="dashboardcustomer">
+                           <div class="row" id="dashboardcustomer">
                             <div class="col-4">
-                                <h3 id="customerDashboard">List Tickets</h3>
+                                <h3 id="customerDashboard">Solved Tickets</h3>
                             </div>
                             <div class="col-8">
-                              <a class=" btn btn-dark top-button"  href="{% url 'create_ticket' %}">Create Ticket <i class="fas fa-list"></i></a>
+                              <a class=" btn btn-dark top-button"  href="{% url 'list_ticket' %}">List Ticket <i class="fas fa-list"></i></a>
                               <a class="btn btn-dark top-button mr-1"  href="{% url 'assign_ticket' %}">Assign Ticket</a>
-                              <a class="btn btn-dark top-button mr-1"  href="{% url 'solved_ticket' %}">Solved Ticket</a>
+                              <a class="btn btn-dark top-button mr-1"  href="{% url 'create_ticket' %}">Create Ticket</a>
                             </div>
 
                      </div>

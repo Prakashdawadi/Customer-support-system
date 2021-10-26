@@ -2,7 +2,7 @@
         <ul class="navbar-nav bg-gradient-dark sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href=" {% url 'customerdashboard' %}">
                 <div class="sidebar-brand-icon rotate-n-15">
                 </div>
                 <div class="sidebar-brand-text mx-3">Customer Support System</div>
@@ -36,8 +36,10 @@
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Ticket info</h6>
-                        <a class="collapse-item" href="{% url 'create_ticket' %}">create ticket</a>
-                        <a class="collapse-item" href="{% url 'list_ticket' %}">My tickets</a>
+                        <a class="collapse-item" href="{% url 'create_ticket' %}">Create Ticket</a>
+                        <a class="collapse-item" href="{% url 'list_ticket' %}">Ticket List</a>
+                        <a class="collapse-item" href="{% url 'assign_ticket' %}">Assigned List</a>
+                        <a class="collapse-item" href="{% url 'solved_ticket' %}">Solved Ticket</a>
                     </div>
                 </div>
             </li>

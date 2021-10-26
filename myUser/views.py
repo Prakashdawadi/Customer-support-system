@@ -1,10 +1,11 @@
 from django.shortcuts import render,redirect,HttpResponse,get_object_or_404,HttpResponseRedirect
 from .form import UserCreationForm,LoginForm,CustomerProfile,changePasswordForm
 from django.contrib import messages
-from django.contrib.auth import authenticate, login,logout
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from myUser.models import User
+from Ticket.models import Ticket, ticketAssign
 from django.contrib.auth.hashers import check_password
 
 
@@ -81,7 +82,18 @@ def customerLogin(request):
 @login_required(login_url='customerlogin')
 def customerDashboard(request):
     if request.user.is_customer:
-        return render(request,'customer/dashboard.html')
+        total_ticket_created = Ticket.objects.filter(created_by_id = request.user.id)
+        total_ticket_assigned = Ticket.objects.filter(created_by_id=request.user.id,assignStatus= True )
+        total_solved_assigned = Ticket.objects.filter(created_by_id=request.user.id,status= False )
+        total_pending_ticket = Ticket.objects.filter(created_by_id=request.user.id,status= True,assignStatus=False )
+        print(total_solved_assigned.count())
+        data = {
+            'total_ticket': total_ticket_created.count(),
+            'total_assigned':total_ticket_assigned.count(),
+            'total_solved':total_solved_assigned.count(),
+            'total_pending':total_pending_ticket.count()
+        }
+        return render(request,'customer/dashboard.html',data)
     else:
         return redirect('caretakerdashboard')
 
@@ -194,8 +206,22 @@ def caretakerLogin(request):
 @login_required(login_url='caretakerlogin')
 def caretakerDashboard(request):
     if request.user.is_Caretaker:
-
-        return render(request,'caretaker/dashboard.html')
+        total_ticket = Ticket.objects.all()
+        incoming_ticket = Ticket.objects.filter(assignStatus=False)
+        assign_ticket_info = ticketAssign.objects.select_related('ticketId').filter(caretakerId=request.user.id)
+        bag = []
+        for s in assign_ticket_info:
+            result = (s.ticketId.id)
+            bag.append(result)
+        assign_ticket = Ticket.objects.filter(id__in=bag, status=True)
+        solved_ticket = Ticket.objects.filter(id__in=bag, status=False)
+        data = {
+            'total_ticket':total_ticket.count(),
+            'incoming_ticket':incoming_ticket.count(),
+            'assign_ticket':assign_ticket.count(),
+            'solved_ticket':solved_ticket.count(),
+        }
+        return render(request,'caretaker/dashboard.html',data)
     else:
 
         return redirect('customerdashboard')
@@ -210,8 +236,6 @@ def caretakerLogout(request):
 @login_required(login_url='caretakerlogin')
 def EditCaretakerProfile(request,id):
     #p = get_object_or_404(User,id=id)
-    print(request.POST)
-    print(request.FILES)
     if not id==request.user.id:
         messages.add_message(request,messages.ERROR,"Invalid url")
         return redirect('caretakerdashboard')
@@ -239,43 +263,6 @@ def EditCaretakerProfile(request,id):
 
     return render(request, 'caretaker/caretakerprofiles.html',data)
 
-@login_required(login_url='caretakerlogin')
-def  caretakerChangePassword(request):
-    form = changePasswordForm()
-    print(request.POST)
-    oldPassword=request.POST.get('old_password')
-    newPassword=request.POST.get('new_password')
-    confirmPassword=request.POST.get('confirm_password')
-    # if oldPassword == '' or newPassword == '' or confirmPassword == '':
-    #     messages.add_message(request,messages.ERROR,'Fields should not empty')
-    #     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-
-    # if newPassword!=confirmPassword:
-    #     messages.add_message(request, messages.ERROR, 'new pass word and confrm password must be same')
-    #     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-    data = {
-        'form' :form
-    }
-
-    # if request.method == "POST" and request.POST :
-    #     oldPassword =  request.POST['old_password']
-    #     newPassword = request.POST['new_password']
-    #     confirmPassword = request.POST['confirm_password']
-    #     if oldPassword == '' or newPassword ==  '' or confirmPassword == '' :
-    #         messages.add_message(request,messages.ERROR,'Fields should not empty')
-    #         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-    #
-    #     if len(str(newPassword)) < 5:
-    #         messages.add_message(request, messages.ERROR, 'new password should be of length 5')
-    #         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-    #     if newPassword!=confirmPassword:
-    #         messages.add_message(request, messages.ERROR, 'new pass word and confrm password must be same')
-    #
-    #         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-
-    return render(request, 'caretaker/change_password.html',data)
 
 login_required(login_url='caretakerlogin')
 def changeStatus(request):
@@ -284,13 +271,11 @@ def changeStatus(request):
         change_status = User.objects.get(pk=request.user.id)
         change_status.caretaker_status=request.POST.get('status')
         change_status.save()
-        print(request.POST)
-        print(change_status)
     return redirect('caretakerdashboard')
 
 @login_required(login_url="caretakelogin" or 'customerlogin')
 def ChangePassword(request):
-    form = changePasswordForm()
+    form = changePasswordForm(request.POST or None)
     data= {
         'form':form
     }
@@ -299,12 +284,8 @@ def ChangePassword(request):
        new_pass = str(request.POST.get('password'))
        len_pass =len(new_pass)
        confirm_pass = request.POST.get('confirm_password')
-       print(old_pass)
-       print(new_pass)
-       print(confirm_pass)
        findUser = User.objects.get(pk=request.user.id)
        check_old_pass = check_password(old_pass,request.user.password)
-       print(check_old_pass)
        if check_old_pass==False :
            messages.add_message(request,messages.ERROR,'Incorrect  old password')
            return render(request,'customer/change_password.html',data)
@@ -314,5 +295,16 @@ def ChangePassword(request):
        if new_pass != confirm_pass:
            messages.add_message(request, messages.ERROR, 'new password and confirm password does not match')
            return render(request, 'customer/change_password.html', data)
+       if new_pass == confirm_pass:
+           findUser.set_password(request.POST.get('password'))
+           findUser.save()
+           user = User.objects.get(email=request.user.email)
+           login(request,user)
+           messages.add_message(request, messages.SUCCESS, 'password changed succesfully')
+           if request.user.is_customer:
+              return redirect('customerdashboard')
+           else:
+               return redirect('caretakerdashboard')
+
 
     return render(request ,'customer/change_password.html',data)

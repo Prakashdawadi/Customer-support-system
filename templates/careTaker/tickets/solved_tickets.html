@@ -1,1 +1,71 @@
-solvesddd
+<!DOCTYPE html>
+{% extends '../../caretaker/includes/dashboardhome.html' %}
+{% load static %}
+{% block 'title' %}Caretaker||solved-Tickets {% endblock %}
+{% block 'body' %}
+<div class="container-fluid">
+    {% include 'includes/flash-messages.html' %}
+    <div class="row" id="dashboardcustomer">
+        <div class="col-4">
+            <h3 id="customerDashboard">List ticket section</h3>
+        </div>
+        <div class="col-8">
+            <a class="btn btn-dark top-button" href="{% url 'incoming_ticket'  %}">Incoming tickets</a>
+            <a class="btn btn-dark top-button mr-1" href="{% url 'assign_list' %}">assigned Tickets</a>
+        </div>
+    </div>
+    <hr>
+    <hr>
+    {% if info %}
+    <table class="table ">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">sn</th>
+            <th scope="col">db_id</th>
+            <th>subject</th>
+            <th>decription</th>
+            <th>created_by</th>
+            <th>Image</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for t in info %}
+        <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{t.id}}</td>
+            <td>{{t.subject}}</td>
+            {% autoescape off %}
+            <td>{{t.description|truncatewords:5}} <a href="">Read More</a></td>
+            {% endautoescape %}
+            <td>{{t.created_by}}</td>
+            {% if t.image %}
+            <td>
+                <img src="{{MEDIA_URL}}{{t.image.url}}" height="50" width="50" alt="">
+            </td>
+            {% else %}
+            <td>
+                empty image
+                <img src="" alt="">
+            </td>
+            {% endif %}
+            <td>
+                <a href="{% url 'view_details' t.id %}" class="btn btn-primary rounded-circle"><i
+                        class="fa fa-eye "
+                        title="Details info"></i></a>
+                <span class="badge badge-success">assigned</span>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <h4>Sorry! You have not Solved  a Ticket yet</h4>
+    {% endif %}
+
+</div>
+
+{% endblock %}
+{% block "js" %}
+{% endblock %}
+

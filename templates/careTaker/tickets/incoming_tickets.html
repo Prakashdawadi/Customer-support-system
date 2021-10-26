@@ -10,13 +10,13 @@
             </div>
         <div class="col-8">
 
-         <a class=" btn btn-dark top-button"  href="utilities-border.html">solved tickets</a>
+         <a class=" btn btn-dark top-button"  href="{% url 'solve_ticket_list' %}">solved tickets</a>
          <a class="btn btn-dark top-button mr-1"  href="{% url 'assign_list' %}">assign Lists</a>
                 </div>
 
     </div>
      <hr>
-        <hr>
+
     {% if request.user.caretaker_status == "available" %}
 
     {% if ticketList %}
@@ -133,6 +133,6 @@
 </div>
 
             {% endblock %}
-        {% block "script" %}
+        {% block "js" %}
         {% endblock %}
 

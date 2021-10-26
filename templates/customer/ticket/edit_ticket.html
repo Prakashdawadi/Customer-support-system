@@ -10,15 +10,18 @@
           {% endblock %}
                 {% block 'body' %}
                 <div class="container-fluid" >
-                      <div class="row" id="dashboardcustomer" >
-                           <div class="col-4">
-                            <h3 id="customerDashboard">Create your Ticket</h3>
-                       </div>
-                    <div class="col-8">
-                    <a class=" btn btn-dark  top-button mr-4" href="{% url 'list_ticket' %}">My Tickets</a>
-                </div>
-                    </div>
-                    <hr>
+                       <div class="row" id="dashboardcustomer">
+                            <div class="col-4">
+                                <h3 id="customerDashboard">Incoming Tickets</h3>
+                            </div>
+                            <div class="col-8">
+                              <a class=" btn btn-dark top-button"  href="{% url 'list_ticket' %}">List Ticket <i class="fas fa-list"></i></a>
+                              <a class="btn btn-dark top-button mr-1"  href="{% url 'assign_ticket' %}">Assign Ticket</a>
+                              <a class="btn btn-dark top-button mr-1"  href="{% url 'solved_ticket' %}">Solved Ticket</a>
+                            </div>
+
+                     </div>
+                     <hr>
                     {% include 'includes/flash-messages.html' %}
                     <form action="" method="POST" enctype="multipart/form-data">
                         {% csrf_token %}

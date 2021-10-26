@@ -44,7 +44,7 @@ def viewDetails(request,id):
         ticketInfo = Ticket.objects.get(id=id)
         if not ticketInfo.status:
             messages.add_message(request, messages.ERROR, "the ticket is closed")
-            return redirect('assign_list')
+            return redirect('close_ticket')
 
         if caretakerAassignedOrNot:
              messages_info= ticketConversation.objects.all().filter(ticket_id=id)
@@ -79,7 +79,7 @@ def viewDetails(request,id):
             return render(request, 'customer/ticket/ticket_details.html', data)
     else:
         try:
-            print('before_try')
+            #print('before_try')
             key = get_object_or_404(Ticket,pk=id)
 
             if not request.user.id == ticketInfo.created_by_id:
@@ -92,8 +92,8 @@ def viewDetails(request,id):
                 .filter(customerId=request.user.id, ticketId=id)
                 ticketInfo = Ticket.objects.get(id=id)
                 messages_info = ticketConversation.objects.all().filter(ticket_id=id)
-                print("hello")
-                print(ticketInfo.status)
+                #print("hello")
+                #print(ticketInfo.status)
 
                 counts = messages_info.count()
                 if counts == 1:
@@ -115,7 +115,7 @@ def viewDetails(request,id):
                     return render(request, 'customer/ticket/ticket_details.html', data)
                 return render(request, 'customer/ticket/ticket_details.html', data)
         except Exception as e:
-            print("exceptss")
+            #print("exceptss")
             messages.add_message(request, messages.ERROR, e)
             return redirect('list_ticket')
 
@@ -133,7 +133,7 @@ def incomingTicket(request):
        ticket_exists = ticketAssign.objects.select_related('ticketId').exists()
        if ticket_exists:
             incoming_ticket = Ticket.objects.filter(assignStatus=False)
-            print(incoming_ticket)
+            #print(incoming_ticket)
             data = {
             'ticket_info':incoming_ticket
             }
@@ -143,7 +143,7 @@ def incomingTicket(request):
             data = {
                 'ticketList': ticketList,
             }
-            print("b")
+            #print("b")
 
             return render(request, 'caretaker/tickets/incoming_tickets.html', data)
 
@@ -169,9 +169,16 @@ def ticketAssigns(request):
 @login_required(login_url='caretakerlogin')
 def assignList(request):
     assign_ticket_info = ticketAssign.objects.select_related('ticketId').filter(caretakerId= request.user.id)
+    bag = []
+    for s in assign_ticket_info:
+        result = (s.ticketId.id)
+        bag.append(result)
+    #print(bag)
+    assign_ticket = Ticket.objects.filter(id__in=bag, status=True)
+    # print(close_ticket)
     print(assign_ticket_info)
     data ={
-        'assign':assign_ticket_info
+        'assign':assign_ticket
     }
     return render(request,'caretaker/tickets/assign_ticket.html',data)
 
@@ -283,6 +290,34 @@ def closeTicket(request):
     ticket_info  = Ticket.objects.filter(pk=request.POST.get('ticketId')).update(status=False)
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+@login_required(login_url="caretakerlogin")
+def solvedClosedList(request):
+    #before closing a ticket we must ensure which tickets has been assigned to login user
+    assign_ticket_list = ticketAssign.objects.select_related('ticketId').filter(caretakerId=request.user.id)
+    #print(solved_ticket_list.count())
+    bag = []
+    for s in assign_ticket_list:
+        result = (s.ticketId.id)
+        bag.append(result)
+    #print(bag)
+    #choose the tickets that are closed only from assigned list bag
+    close_ticket = Ticket.objects.filter(id__in=bag,status=False)
+    #print(close_ticket)
+
+    data = {
+    'info': close_ticket
+    }
+    return render(request,'caretaker/tickets/solved_tickets.html',data)
+
+@login_required(login_url="customerlogin")
+def assignTicket(request):
+    return render(request,'customer/ticket/assign_ticket.html')
+
+@login_required(login_url="customerlogin")
+def solvedTicket(request):
+    return render(request,'customer/ticket/solved_ticket.html')
+
 
 
 

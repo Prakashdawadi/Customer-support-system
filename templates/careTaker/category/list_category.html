@@ -4,9 +4,15 @@
                 {% block 'body' %}
                 <div class="container-fluid">
                     {% include 'includes/flash-messages.html' %}
-                    <div id="dashboardcustomer" >
-                        <h3 id="customerDashboard">list category section</h3>
+                      <div class="row" id="dashboardcustomer" >
+                        <div class="col-4">
+                        <h3 id="customerDashboard">List Category section</h3>
+                            </div>
+                        <div class="col-8">
+                            <a class="btn btn-dark top-button" href="{% url 'create_category' %}">Create category <i class="fas fa-plus"></i></a>
+                        </div>
                     </div>
+                    <hr>
                         <table class="table ">
                             <thead class="thead-dark">
                             <tr>
@@ -19,7 +25,7 @@
                             <tbody>
                             {% for cats in category %}
                             <tr>
-                                <td>{{cats.id}}</td>
+                                <td>{{forloop.counter}}</td>
                                 <td>{{cats.category}}</td>
                                 <td>{{cats.status}}</td>
                                 <td>
@@ -40,6 +46,6 @@
                         </div>
 
             {% endblock %}
-        {% block "script" %}
+        {% block "js" %}
         {% endblock %}
 

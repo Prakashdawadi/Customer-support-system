@@ -13,7 +13,7 @@
 
 
             <a class="btn btn-dark top-button" href="{% url 'incoming_ticket'  %}">Incoming tickets</a>
-            <a class="btn btn-dark top-button mr-1" href="utilities-border.html">solved tickets</a>
+            <a class="btn btn-dark top-button mr-1" href="{% url 'solve_ticket_list' %}">solved tickets</a>
 
         </div>
 
@@ -40,14 +40,14 @@
         <tr>
             <td>{{forloop.counter}}</td>
             <td>{{t.id}}</td>
-            <td>{{t.ticketId.subject}}</td>
+            <td>{{t.subject}}</td>
             {% autoescape off %}
-            <td>{{t.ticketId.description|truncatewords:5}} <a href="">Read More</a></td>
+            <td>{{t.description|truncatewords:5}} <a href="">Read More</a></td>
             {% endautoescape %}
-            <td>{{t.ticketId.created_by}}</td>
-            {% if t.ticketId.image %}
+            <td>{{t.created_by}}</td>
+            {% if t.image %}
             <td>
-                <img src="{{MEDIA_URL}}{{t.ticketId.image.url}}" height="50" width="50" alt="">
+                <img src="{{MEDIA_URL}}{{t.image.url}}" height="50" width="50" alt="">
             </td>
             {% else %}
             <td>
@@ -55,11 +55,9 @@
                 empty image
                 <img src="" alt="">
             </td>
-
             {% endif %}
             <td>
-
-                <a href="{% url 'view_details' t.ticketId_id %}" class="btn btn-primary rounded-circle"><i
+                <a href="{% url 'view_details' t.id %}" class="btn btn-primary rounded-circle"><i
                         class="fa fa-eye "
                         title="Details info"></i></a>
                 <span class="badge badge-success">assigned</span>
