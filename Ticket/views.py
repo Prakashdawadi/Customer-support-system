@@ -27,7 +27,7 @@ def createTicket(request):
     return render(request,'customer/ticket/create_ticket.html',data)
 @login_required(login_url='customerlogin')
 def listTicket(request):
-    ticketList = Ticket.objects.all().filter(created_by_id = request.user.id).order_by('-id')
+    ticketList = Ticket.objects.all().filter(created_by_id = request.user.id,status=True,assignStatus=False).order_by('-id')
     data= {
         'ticketList':ticketList
     }
@@ -37,6 +37,9 @@ def listTicket(request):
 @login_required(login_url='customerlogin' or 'caretakerlogin')
 def viewDetails(request,id):
     ticketInfo = Ticket.objects.get(id=id)
+    if not ticketInfo.status:
+        messages.add_message(request, messages.ERROR, "the ticket is closed")
+        return redirect('close_ticket')
     if request.user.is_Caretaker:
 
         #Cartakers also view the details of all incoming tickets but not assign tickets
@@ -312,11 +315,25 @@ def solvedClosedList(request):
 
 @login_required(login_url="customerlogin")
 def assignTicket(request):
-    return render(request,'customer/ticket/assign_ticket.html')
+    # before closing a ticket we must ensure which tickets has been assigned to login user
+    assign_ticket = Ticket.objects.filter(created_by=request.user.id, status=True, assignStatus=True)
+    #print(solvedTicket.count())
+    #print(solvedTicket)
+    data = {
+        'info': assign_ticket
+    }
+    return render(request,'customer/ticket/assign_ticket.html',data)
 
 @login_required(login_url="customerlogin")
 def solvedTicket(request):
-    return render(request,'customer/ticket/solved_ticket.html')
+    # before closing a ticket we must ensure which tickets has been assigned to login user
+    solvedTicket = Ticket.objects.filter(created_by=request.user.id,status=False,assignStatus=True)
+    #print(solvedTicket.count())
+    #print(solvedTicket)
+    data = {
+        'info': solvedTicket
+    }
+    return render(request,'customer/ticket/solved_ticket.html',data)
 
 
 

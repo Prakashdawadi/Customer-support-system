@@ -13,10 +13,9 @@
                               <a class="btn btn-dark top-button mr-1"  href="{% url 'assign_ticket' %}">Assign Ticket</a>
                               <a class="btn btn-dark top-button mr-1"  href="{% url 'create_ticket' %}">Create Ticket</a>
                             </div>
-
                      </div>
                      <hr>
-                    {% if ticketList %}
+                    {% if info %}
                     <table class="table  table-hover">
                         <thead class="thead-dark">
                         <tr>
@@ -28,10 +27,8 @@
                             <th>Action</th>
                         </tr>
                         </thead>
-
                         <tbody>
-
-                        {% for t in ticketList %}
+                        {% for t in info %}
                         <tr>
                             <td>{{forloop.counter}}</td>
                             <td>{{t.id}}</td>
@@ -53,31 +50,25 @@
                             <td>
                                 <a href="{% url 'view_details' t.id %}" class="btn btn-primary rounded-circle"><i class="fa fa-eye "
                                                                                      title="Details info"></i></a>
-                                <a href="{% url 'edit_ticket' t.id %}" class="btn btn-warning rounded-circle"><i class="fa fa-pen "
-                                                                                     title="edit"></i></a>
-                                <form action="{% url 'delete_ticket' t.id  %}" method="POST" class="d-inline">
-                                    {% csrf_token %}
+<!--                                <a href="{% url 'edit_ticket' t.id %}" class="btn btn-warning rounded-circle"><i class="fa fa-pen "-->
+<!--                                                                                     title="edit"></i></a>-->
+<!--                                <form action="{% url 'delete_ticket' t.id  %}" method="POST" class="d-inline">-->
+<!--                                    {% csrf_token %}-->
 
-                                    <button type="submit"
-                                            onclick="return confirm('Are you sure want to delete  category')"
-                                            class="btn btn-danger rounded-circle "><i class="fa fa-trash"
-                                                                                      data-toggle="tooltip" title="delete"></i></button>
-
-                                </form>
+<!--                                    <button type="submit"-->
+<!--                                            onclick="return confirm('Are you sure want to delete  category')"-->
+<!--                                            class="btn btn-danger rounded-circle "><i class="fa fa-trash"-->
+<!--                                                                                      data-toggle="tooltip" title="delete"></i></button>-->
+<!--                                </form>-->
                             </td>
                         </tr>
                         {% endfor %}
-
                         </tbody>
-
-
                     </table>
                     {% else %}
-                    <h4>Sorry! you have not issue a ticket yet</h4>
+                    <h4>Sorry! There is no any Solved or Closed ticket yet </h4>
                     {% endif %}
-
                 </div>
-
             {% endblock %}
         {% block "js" %}
         {% endblock %}
