@@ -5,45 +5,70 @@
 {% block 'css' %}
 <style>
 
-   .container-fluid{
-
-       background-image:url({% static 'images/bg.jpg' %});
-       margin-top:3px;
-       padding:20vh;
-
-       background-size:cover;
-    }
-
 </style>
 
 {% endblock %}
 
 {% block 'body' %}
 
-<div class="container-fluid" >
-    <div class="row justify-content-center">
-        <div class="col-lg-7 col-md-12 col-sm-12">
-            <div class="card">
-                <div class="card-header ">
-                    <div class="usersignupheader">
-                            <p id="customersignup">Caretaker signup section</p>
+
+<body class="bg-gradient-dark">
+
+    <div class="container">
+
+        <div class="card offset-1 col-lg-10 col-sm-10 col-md-10 o-hidden border-0 bg-success shadow-lg my-5">
+            <div class="card-body p-0">
+                <!-- Nested Row within Card Body -->
+                <div class="row">
+
+                    <div class="col-lg-12">
+                        <div class="p-5">
+                            <div class="text-center">
+                                {% include 'includes/flash-messages.html' %}
+                                <h1 class="h4 text-gray-900 mb-4">Create an  caretaker  Account!</h1>
+                            </div>
+                            <form  action="{% url 'customersignup' %}" method="POST" class="user">
+
+                                 {% csrf_token %}
+                                 {{form.as_p}}
+                                <button type="submit" class="btn btn-primary btn-user btn-block">
+                                    Register Account
+                                </button>
+                                <hr>
+
+                            </form>
+                            <hr>
+                            <div class="text-center">
+                                <a class="small  btn btn-success" href="#">Forgot Password?</a>
+                            </div>
+                            <div class="text-center">
+                                <a class="small btn btn-success" href="{% url 'caretakerlogin' %}">Already have an account? Login!</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="card-body">
-                    {% include 'includes/flash-messages.html' %}
-                    <form action="{% url "caretakersignup" %}" method="Post">
-                        {% csrf_token %}
-                        {{form.as_p}}
-                        <button class="btn btn-success"id="signupbutton" >create Account <i class="fa fa-user"></i></button>
-
-                    </form>
-                </div>
-
             </div>
         </div>
+
     </div>
 
+</body>
 
-</div>
+{% block 'js' %}
+
+{%  endblock %}
+
+ <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
+
+
+
 
 {% endblock %}

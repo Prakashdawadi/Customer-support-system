@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .form import categoryForm
 from .models import Category
+from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 
 # Create your views here.
 @login_required(login_url='caretakerlogin')
@@ -24,9 +25,21 @@ def createCategory(request):
 
 @login_required(login_url='caretakerlogin')
 def listCategory(request):
-    category = Category.objects.all().order_by('-id')
+    category = Category.objects.all().order_by('-updated_at')
+    all_category = Paginator(category,4)
+    page_url = request.GET.get('page')
+    #print(all_category)
+    try:
+        cats_info = all_category.page(page_url)
+    except PageNotAnInteger:
+        cats_info = all_category.page(1)
+    except EmptyPage:
+        cats_info = all_category.page(all_category.num_pages)
+
+
     data = {
-        'category':category
+        'category':cats_info,
+        'range':all_category
     }
     return render(request,'caretaker/category/list_category.html',data)
 

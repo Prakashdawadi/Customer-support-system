@@ -1,6 +1,20 @@
 {% extends '../../caretaker/includes/dashboardhome.html' %}
   {% load static %}
       {% block 'title' %}Caretaker||List-category  {% endblock %}
+    {%  block 'css' %}
+<style>
+        .table{
+            border:2px solid black;
+        }
+        .tr{
+            border:2px solid black;
+            }
+        tr .h-line{
+          border:2px solid black;
+          }
+ </style>
+    {% endblock %}
+
                 {% block 'body' %}
                 <div class="container-fluid">
                     {% include 'includes/flash-messages.html' %}
@@ -13,10 +27,10 @@
                         </div>
                     </div>
                     <hr>
-                        <table class="table ">
+                        <table class="table table-bordered table-hover ">
                             <thead class="thead-dark">
-                            <tr>
-                                <th  scope="col">sn</th>
+                            <tr >
+                                <th scope="col">sn</th>
                                 <th>category</th>
                                 <th>Status</th>
                                 <th>Action</th>
@@ -24,11 +38,11 @@
                             </thead>
                             <tbody>
                             {% for cats in category %}
-                            <tr>
-                                <td>{{forloop.counter}}</td>
-                                <td>{{cats.category}}</td>
-                                <td>{{cats.status}}</td>
-                                <td>
+                            <tr class= "tr">
+                                <td  class="h-line">{{forloop.counter}}</td>
+                                <td  class="h-line">{{cats.category}}</td>
+                                <td  class="h-line">{{cats.status}}</td>
+                                <td  class="h-line">
                                     <a href="{% url 'edit_category' cats.id %}" class="btn btn-warning rounded-circle"><i class="fa fa-pen " title="edit" ></i></a>
                                     <form action="{% url 'delete_category' cats.id %}" method="POST" class="d-inline">
                                         {% csrf_token %}
@@ -42,6 +56,30 @@
 
                             </tbody>
                         </table>
+                    <nav aria-label="...">
+                          <ul class="pagination">
+                              {% if category.has_previous %}
+                            <li class="page-item ">
+                              <a class="page-link" href="?page={{category.previous_page_number}}" tabindex="-1">Previous</a>
+                            </li>
+                              {% endif %}
+<!--                                Page {{ category.number }} of {{ category.paginator.num_pages }}-->
+                              {% for i in range.page_range %}
+                               {% if i <= 3  %}
+
+                            <li class="page-item"><a href="?page={{i}}" class="page-link" >{{i}}</a></li>
+                              {% endif %}
+
+                              {% endfor %}
+                              {% if category.has_next %}
+                            <li class="page-item">
+                              <a class="page-link" href="?page={{category.next_page_number}}">Next</a>
+                            </li>
+                              {% endif %}
+                          </ul>
+                        </nav>
+
+
 
                         </div>
 

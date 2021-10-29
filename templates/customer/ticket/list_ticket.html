@@ -1,12 +1,12 @@
 {% extends '../../customer/includes/dashboardhome.html' %}
   {% load static %}
-      {% block 'title' %}Customer||List-Tickets  {% endblock %}
+      {% block 'title' %}Customer||List- Tickets  {% endblock %}
                 {% block 'body' %}
                 <div class="container-fluid ">
                     {% include 'includes/flash-messages.html' %}
                           <div class="row" id="dashboardcustomer">
                             <div class="col-4">
-                                <h3 id="customerDashboard">List Tickets</h3>
+                                <h3 id="customerDashboard">List all Ticket</h3>
                             </div>
                             <div class="col-8">
                               <a class=" btn btn-dark top-button"  href="{% url 'create_ticket' %}">Create Ticket <i class="fas fa-list"></i></a>
@@ -16,7 +16,7 @@
                      </div>
                      <hr>
                     {% if ticketList %}
-                    <table class="table  table-hover">
+                    <table class="table table-hover table-bordered">
                         <thead class="thead-dark">
                         <tr>
                             <th scope="">sn</th>
@@ -27,16 +27,14 @@
                             <th>Action</th>
                         </tr>
                         </thead>
-
                         <tbody>
-
                         {% for t in ticketList %}
                         <tr>
                             <td>{{forloop.counter}}</td>
                             <td>{{t.id}}</td>
                             <td>{{t.subject}}</td>
                             {% autoescape off %}
-                            <td>{{t.description|truncatewords:5}} <a href="">Read More</a></td>
+                            <td>{{t.description}} </td>
                             {% endautoescape  %}
                             {% if t.image %}
                             <td>
@@ -44,16 +42,13 @@
                             </td>
                             {% else %}
                             <td>
-                                empty image
-                                <img src="" alt="">
+                                <img src="{% static 'images/empty.png' %}" width="60" alt="">
                             </td>
 
                             {% endif %}
                             <td>
-                                <a href="{% url 'view_details' t.id %}" class="btn btn-primary rounded-circle"><i class="fa fa-eye "
-                                                                                     title="Details info"></i></a>
-                                <a href="{% url 'edit_ticket' t.id %}" class="btn btn-warning rounded-circle"><i class="fa fa-pen "
-                                                                                     title="edit"></i></a>
+                                <a href="{% url 'view_details' t.id %}" class="btn btn-primary rounded-circle"><i class="fa fa-eye " title="Details info"></i></a>
+                                <a href="{% url 'edit_ticket' t.id %}" class="btn btn-warning rounded-circle"><i class="fa fa-pen " title="edit"></i></a>
                                 <form action="{% url 'delete_ticket' t.id  %}" method="POST" class="d-inline">
                                     {% csrf_token %}
 
@@ -61,22 +56,36 @@
                                             onclick="return confirm('Are you sure want to delete  category')"
                                             class="btn btn-danger rounded-circle "><i class="fa fa-trash"
                                                                                       data-toggle="tooltip" title="delete"></i></button>
-
                                 </form>
                             </td>
                         </tr>
                         {% endfor %}
-
                         </tbody>
-
-
                     </table>
+                    <nav aria-label="...">
+                          <ul class="pagination">
+                              {% if ticketList.has_previous %}
+                            <li class="page-item ">
+                              <a class="page-link" href="?page={{ticketList.previous_page_number}}" tabindex="-1">Previous</a>
+                            </li>
+                              {% endif %}
+<!--                                Page {{ category.number }} of {{ category.paginator.num_pages }}-->
+                              {% for i in range.page_range %}
+                               {% if i <= 4  %}
+                            <li class="page-item"><a href="?page={{i}}" class="page-link" >{{i}}</a></li>
+                              {% endif %}
+                              {% endfor %}
+                              {% if ticketList.has_next %}
+                            <li class="page-item">
+                              <a class="page-link" href="?page={{ticketList.next_page_number}}">Next</a>
+                            </li>
+                              {% endif %}
+                          </ul>
+                        </nav>
                     {% else %}
                     <h4>Sorry! you have not issue a ticket yet</h4>
                     {% endif %}
-
                 </div>
-
             {% endblock %}
         {% block "js" %}
         {% endblock %}

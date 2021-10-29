@@ -4,13 +4,14 @@ from .form import ticketForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from  .models import Ticket,ticketAssign,ticketConversation
+from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 
 # Create your views here.
 
 @login_required(login_url='customerlogin')
 def createTicket(request):
     createTicket = ticketForm(request.POST or None,request.FILES or None)
-    print(request.POST)
+    #print(request.POST)
     if createTicket.is_valid():
         user = createTicket.save()
         user.status= True
@@ -27,9 +28,19 @@ def createTicket(request):
     return render(request,'customer/ticket/create_ticket.html',data)
 @login_required(login_url='customerlogin')
 def listTicket(request):
-    ticketList = Ticket.objects.all().filter(created_by_id = request.user.id,status=True,assignStatus=False).order_by('-id')
+    ticketList = Ticket.objects.all().filter(created_by_id = request.user.id,status=True,assignStatus=False).order_by('-updated_at')
+
+    paginate = Paginator(ticketList, 4)
+    page_url = request.GET.get('page')
+    try:
+        ticket_info = paginate.page(page_url)
+    except PageNotAnInteger:
+        ticket_info = paginate.page(1)
+    except EmptyPage:
+        ticket_info = paginate.page(paginate.num_pages)
     data= {
-        'ticketList':ticketList
+        'ticketList':ticket_info,
+        'range': paginate
     }
     return render(request,'customer/ticket/list_ticket.html',data)
 
@@ -38,8 +49,13 @@ def listTicket(request):
 def viewDetails(request,id):
     ticketInfo = Ticket.objects.get(id=id)
     if not ticketInfo.status:
-        messages.add_message(request, messages.ERROR, "the ticket is closed")
-        return redirect('close_ticket')
+        if request.user.is_Caretaker:
+            messages.add_message(request, messages.ERROR, " Sorry! The ticket is closed")
+            return redirect('solve_ticket_list')
+        else:
+            messages.add_message(request, messages.ERROR, "Sorry! The ticket is closed")
+            return redirect('solved_ticket')
+
     if request.user.is_Caretaker:
 
         #Cartakers also view the details of all incoming tickets but not assign tickets
@@ -51,8 +67,7 @@ def viewDetails(request,id):
 
         if caretakerAassignedOrNot:
              messages_info= ticketConversation.objects.all().filter(ticket_id=id)
-             print(messages_info.count())
-             print(ticketInfo.status)
+
              counts= messages_info.count()
              if counts == 1:
                  data = {
@@ -122,33 +137,25 @@ def viewDetails(request,id):
             messages.add_message(request, messages.ERROR, e)
             return redirect('list_ticket')
 
-
-
-
 @login_required(login_url='caretakerlogin')
 def incomingTicket(request):
 
-       # to view the incoming ticket the caretaker must be online or available or no busy
-       if request.user.is_Caretaker and request.user.caretaker_status == 'busy':
-           return render(request, 'caretaker/tickets/incoming_tickets.html')
+    ticket = Ticket.objects.filter(status=True,assignStatus=False).order_by('id')
+    ticket_list = Paginator(ticket,4)
+    page_url = request.GET.get('page')
 
-       # this is for whether the data exists in ticket assign table or not
-       ticket_exists = ticketAssign.objects.select_related('ticketId').exists()
-       if ticket_exists:
-            incoming_ticket = Ticket.objects.filter(assignStatus=False)
-            #print(incoming_ticket)
-            data = {
-            'ticket_info':incoming_ticket
-            }
-            return render(request, 'caretaker/tickets/incoming_tickets.html',data)
-       else:
-            ticketList = Ticket.objects.all().filter(status=True).order_by('-id')
-            data = {
-                'ticketList': ticketList,
-            }
-            #print("b")
+    try:
+        ticket_info = ticket_list.page(page_url)
+    except PageNotAnInteger:
+        ticket_info = ticket_list.page(1)
+    except EmptyPage:
+        ticket_info = ticket.page(ticket.num_pages)
 
-            return render(request, 'caretaker/tickets/incoming_tickets.html', data)
+    data = {
+        'ticketList':ticket_info,
+        'range':ticket_list
+    }
+    return render(request, 'caretaker/tickets/incoming_tickets.html', data)
 
 @login_required(login_url='caretakerlogin')
 def ticketAssigns(request):
@@ -158,7 +165,7 @@ def ticketAssigns(request):
         customer_id  =  request.POST['customer']
         already_assign = ticketAssign.objects.filter(ticketId_id = ticket_id).exists()
         if already_assign:
-            print(already_assign)
+            #print(already_assign)
             messages.add_message(request,messages.ERROR,'this ticket is already been assign by another caretaker')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         insert = ticketAssign(ticketId_id=ticket_id,caretakerId_id=caretaker_id,customerId_id = customer_id,  status=True)
@@ -177,48 +184,26 @@ def assignList(request):
         result = (s.ticketId.id)
         bag.append(result)
     #print(bag)
-    assign_ticket = Ticket.objects.filter(id__in=bag, status=True)
-    # print(close_ticket)
-    print(assign_ticket_info)
+    assign_ticket = Ticket.objects.filter(id__in=bag, status=True).order_by('id')
+    paginate = Paginator(assign_ticket,4)
+    page_url = request.GET.get('page')
+    try:
+        ticket_info = paginate.page(page_url)
+    except PageNotAnInteger:
+        ticket_info = paginate.page(1)
+    except EmptyPage:
+        ticket_info = paginate.page(paginate.num_pages)
     data ={
-        'assign':assign_ticket
+        'assign':ticket_info,
+        'range': paginate
     }
     return render(request,'caretaker/tickets/assign_ticket.html',data)
-
-# # view details section by caretaker
-# @login_required(login_url='caretakerlogin')
-# def assignedTicketviewDetails(request,id):
-#
-#     if request.user.is_Caretaker:
-#         ticketId_exists = ticketAssign.objects.filter(ticketId=id, caretakerId=request.user.id).exists()
-#         # with assign view details and display conversation section
-#         if (ticketId_exists):
-#             ticket_Info = Ticket.objects.get(id=id)
-#             caretaker_info = ticketAssign.objects.select_related('caretakerId').filter(caretakerId=request.user.id,ticketId=id)
-#             data = {
-#                 'ticket_info': ticket_Info,
-#                 'assigner_name':caretaker_info
-#
-#             }
-#             print(caretaker_info)
-#
-#             return render(request, 'caretaker/tickets/assign_ticket_viewdetails.html', data)
-#         else:
-#             # without assign view details section
-#             ticketInfo = Ticket.objects.get(id=id)
-#             data = {
-#                 'ticketInfo': ticketInfo
-#             }
-#             return render(request, 'caretaker/tickets/assign_ticket_viewdetails.html', data)
-#     else:
-#         messages.add_message(request,messages.ERROR,'cannot details at this moment')
-#         return redirect(request, 'caretakerdashboard')
 
 @login_required(login_url="customerlogin")
 def deleteTicket(request,id):
     if request.user.is_customer:
         findId = Ticket.objects.get(pk=id)
-        print(findId)
+        #print(findId)
         findId.delete();
         messages.add_message(request,messages.SUCCESS,"Tickets has been deleted successfully")
         return redirect('list_ticket')
@@ -240,7 +225,7 @@ def editTicket(request,id):
             #print(request.POST)
             title = str(request.POST.get('subject'))
             title_length = len(title)
-            print(title)
+            #print(title)
             description = len(str(request.POST.get('description')))
             if title == '' or title_length<5:
                 messages.add_message(request, messages.ERROR, "Title should not empty and must be of 4 letter")
@@ -264,14 +249,14 @@ def editTicket(request,id):
 
 @login_required(login_url='customerlogin or caretakerlogin')
 def customerMessage(request):
-    print(request.POST)
+    #print(request.POST)
 
     if request.method == "POST":
         content = request.POST['textarea']
         if content == '':
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-        print(request.POST)
+        #print(request.POST)
         tickets = request.POST['ticket']
         caretakers = request.POST['caretaker']
         customers = request.POST['customer']
@@ -291,8 +276,8 @@ def customerMessage(request):
 def closeTicket(request):
     print(request.POST.get('ticketId'))
     ticket_info  = Ticket.objects.filter(pk=request.POST.get('ticketId')).update(status=False)
-
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    messages.add_message(request,messages.SUCCESS ,"Ticket has been closed successfully")
+    return redirect('solve_ticket_list')
 
 @login_required(login_url="caretakerlogin")
 def solvedClosedList(request):
@@ -303,13 +288,22 @@ def solvedClosedList(request):
     for s in assign_ticket_list:
         result = (s.ticketId.id)
         bag.append(result)
-    #print(bag)
     #choose the tickets that are closed only from assigned list bag
-    close_ticket = Ticket.objects.filter(id__in=bag,status=False)
-    #print(close_ticket)
+    close_ticket = Ticket.objects.filter(id__in=bag,status=False).order_by('-updated_at')
+
+    paginate = Paginator(close_ticket, 4)
+    page_url = request.GET.get('page')
+    try:
+        ticket_info = paginate.page(page_url)
+    except PageNotAnInteger:
+        ticket_info = paginate.page(1)
+    except EmptyPage:
+        ticket_info = paginate.page(paginate.num_pages)
+
 
     data = {
-    'info': close_ticket
+    'info': ticket_info,
+    'range': paginate
     }
     return render(request,'caretaker/tickets/solved_tickets.html',data)
 
@@ -317,10 +311,18 @@ def solvedClosedList(request):
 def assignTicket(request):
     # before closing a ticket we must ensure which tickets has been assigned to login user
     assign_ticket = Ticket.objects.filter(created_by=request.user.id, status=True, assignStatus=True)
-    #print(solvedTicket.count())
-    #print(solvedTicket)
+    paginate = Paginator(assign_ticket, 4)
+    page_url = request.GET.get('page')
+    try:
+        ticket_info = paginate.page(page_url)
+    except PageNotAnInteger:
+        ticket_info = paginate.page(1)
+    except EmptyPage:
+        ticket_info = paginate.page(paginate.num_pages)
+
     data = {
-        'info': assign_ticket
+        'info': ticket_info,
+        'range':paginate,
     }
     return render(request,'customer/ticket/assign_ticket.html',data)
 
@@ -328,10 +330,18 @@ def assignTicket(request):
 def solvedTicket(request):
     # before closing a ticket we must ensure which tickets has been assigned to login user
     solvedTicket = Ticket.objects.filter(created_by=request.user.id,status=False,assignStatus=True)
-    #print(solvedTicket.count())
-    #print(solvedTicket)
+    paginate = Paginator(solvedTicket, 4)
+    page_url = request.GET.get('page')
+    try:
+        ticket_info = paginate.page(page_url)
+    except PageNotAnInteger:
+        ticket_info = paginate.page(1)
+    except EmptyPage:
+        ticket_info = paginate.page(paginate.num_pages)
+
     data = {
-        'info': solvedTicket
+        'info': ticket_info,
+        'range':paginate
     }
     return render(request,'customer/ticket/solved_ticket.html',data)
 

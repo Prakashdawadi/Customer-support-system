@@ -17,6 +17,6 @@ urlpatterns = [
     path('caretaker/solved-ticket-list/',views.solvedClosedList,name='solve_ticket_list'),
     path('caretaker/my-assign-list',views.assignList,name='assign_list'),
     path('customer/send-message',views.customerMessage,name='customer_message'),
-    path('carateker/close-ticket',views.closeTicket,name='close_ticket')
+    path('caretaker/close-ticket',views.closeTicket,name='close_ticket')
 
 ]

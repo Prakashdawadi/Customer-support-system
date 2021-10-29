@@ -16,7 +16,7 @@
                      </div>
                      <hr>
                     {% if info %}
-                    <table class="table  table-hover">
+                    <table class="table table-hover table-bordered">
                         <thead class="thead-dark">
                         <tr>
                             <th scope="">sn</th>
@@ -34,7 +34,7 @@
                             <td>{{t.id}}</td>
                             <td>{{t.subject}}</td>
                             {% autoescape off %}
-                            <td>{{t.description|truncatewords:5}} <a href="">Read More</a></td>
+                            <td>{{t.description}}</td>
                             {% endautoescape  %}
                             {% if t.image %}
                             <td>
@@ -42,28 +42,40 @@
                             </td>
                             {% else %}
                             <td>
-                                empty image
-                                <img src="" alt="">
+                                <img src="{% static 'images/empty.png' %}" width="60" alt="">
                             </td>
-
                             {% endif %}
                             <td>
                                 <a href="{% url 'view_details' t.id %}" class="btn btn-primary rounded-circle"><i class="fa fa-eye "
                                                                                      title="Details info"></i></a>
-<!--                                <a href="{% url 'edit_ticket' t.id %}" class="btn btn-warning rounded-circle"><i class="fa fa-pen "-->
-<!--                                                                                     title="edit"></i></a>-->
-<!--                                <form action="{% url 'delete_ticket' t.id  %}" method="POST" class="d-inline">-->
-<!--                                    {% csrf_token %}-->
-
-<!--                                    <button type="submit"-->
-<!--                                            onclick="return confirm('Are you sure want to delete  category')"-->
-<!--                                            class="btn btn-danger rounded-circle "><i class="fa fa-trash" data-toggle="tooltip" title="delete"></i></button>-->
-<!--                                </form>-->
+                                <span class="badge badge-success">assigned</span>
                             </td>
                         </tr>
                         {% endfor %}
                         </tbody>
                     </table>
+                    <nav aria-label="...">
+                          <ul class="pagination">
+                              {% if info.has_previous %}
+                            <li class="page-item ">
+                              <a class="page-link" href="?page={{info.previous_page_number}}" tabindex="-1">Previous</a>
+                            </li>
+                              {% endif %}
+<!--                                Page {{ category.number }} of {{ category.paginator.num_pages }}-->
+                              {% for i in range.page_range %}
+                               {% if i <= 3  %}
+
+                            <li class="page-item"><a href="?page={{i}}" class="page-link" >{{i}}</a></li>
+                              {% endif %}
+
+                              {% endfor %}
+                              {% if info.has_next %}
+                            <li class="page-item">
+                              <a class="page-link" href="?page={{info.next_page_number}}">Next</a>
+                            </li>
+                              {% endif %}
+                          </ul>
+                        </nav>
                     {% else %}
                     <h4>Sorry! There is not ticket assign yet</h4>
                     {% endif %}
