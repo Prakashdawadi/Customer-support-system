@@ -30,7 +30,6 @@
         <thead class="thead-dark">
         <tr>
             <th scope="col">sn</th>
-            <th scope="col">db_id</th>
             <th>subject</th>
             <th>decription</th>
             <th>Image</th>
@@ -41,7 +40,6 @@
         {% for t in ticketList %}
          <tr class= "tr">
             <td class="h-line">{{forloop.counter}}</td>
-            <td class="h-line">{{t.id}}</td>
             <td class="h-line">{{t.subject}}</td>
             {% autoescape off %}
             <td class="h-line">{{t.description|truncatewords:10}} </td>

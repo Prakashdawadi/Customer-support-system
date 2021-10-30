@@ -20,7 +20,6 @@
                         <thead class="thead-dark">
                         <tr>
                             <th scope="">sn</th>
-                            <th scope="col">db_id</th>
                             <th>subject</th>
                             <th>decription</th>
                             <th>Image</th>
@@ -31,7 +30,7 @@
                         {% for t in info %}
                         <tr>
                             <td>{{forloop.counter}}</td>
-                            <td>{{t.id}}</td>
+
                             <td>{{t.subject}}</td>
                             {% autoescape off %}
                             <td>{{t.description}}</td>
