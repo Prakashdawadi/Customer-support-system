@@ -83,7 +83,7 @@ def customerLogin(request):
 def customerDashboard(request):
     if request.user.is_customer:
         total_ticket_created = Ticket.objects.filter(created_by_id = request.user.id)
-        total_ticket_assigned = Ticket.objects.filter(created_by_id=request.user.id,assignStatus= True )
+        total_ticket_assigned = Ticket.objects.filter(created_by_id=request.user.id,assignStatus= True,status=True )
         total_solved_assigned = Ticket.objects.filter(created_by_id=request.user.id,status= False )
         total_pending_ticket = Ticket.objects.filter(created_by_id=request.user.id,status= True,assignStatus=False )
         print(total_solved_assigned.count())

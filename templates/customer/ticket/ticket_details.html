@@ -12,18 +12,18 @@
               float:right
               }
 
-              #msg_container{
-              border:4px solid black;
-              overflow-y:auto;
-              height:250px"
-              }
-              .left-message{
-              background-color:yellow;
-              margin-top:80px;
-              }
-               .right-message{
-              background-color:black
-              }
+<!--              #msg_container{-->
+<!--              border:4px solid black;-->
+<!--              overflow-y:auto;-->
+<!--              height:250px"-->
+<!--              }-->
+<!--              .left-message{-->
+<!--              background-color:yellow;-->
+<!--              margin-top:80px;-->
+<!--              }-->
+<!--               .right-message{-->
+<!--              background-color:black-->
+<!--              }-->
 
           </style>
           {% endblock %}
@@ -83,82 +83,240 @@
                     </div>
 
                 </div>
-                <div class="col-lg-6 col-sm-12 col-md-12">
+<!--                <div class="col-lg-6 col-sm-12 col-md-12">-->
 
-                    {% if messages_info %}
-<!--                    this section is used for display the first message in proper-->
-                     {% if counts %}
-                     {% endif %}
-                    <h5>Conversation section</h5>
-                    <div class="container-fluid" id="msg_container" style="border:4px solid black;overflow-y:bottom;height:250px">
-                        {% for m in messages_info %}
-                        {% ifnotequal m.msg_created_by_id request.user.id %}
-                        <div class="row left-message">
-                            <div class="col-sm-6 col-lg-5 col-md-6">
-                                {% autoescape off %}
-                                <span> {{m.message}}</span>
-                                {% endautoescape %}
-                            </div>
-                        </div>
-                        <div class="row left-time ">
-                            <div class="col-sm-6 col-lg-12 col-md-6">
-                                {{m.created_at|timesince}}
-                            </div>
-                        </div>
-                        <hr>
-                        {% else %}
-                        {% if counts %}
-                        sinfle
-                        <div class="row right-message" style="margin-top:125px;">
-                            <div class="offset-8">
-                                {% autoescape off %}
-                                <span> {{m.message}}</span>
-                                {% endautoescape %}
-                            </div>
-                        </div>
-                        <div class="row right-time">
-                            <div class="offset-8">
-                                {{m.created_at|timesince}} ago
-                            </div>
-                        </div>
+<!--                    {% if messages_info %}-->
+<!--&lt;!&ndash;                    this section is used for display the first message in proper&ndash;&gt;-->
 
-                         {% else %}
+<!--                    <h5>Conversation section</h5>-->
+<!--                    <div class="container-fluid" id="msg_container" style="border:4px solid black;overflow-y:bottom;height:250px">-->
+<!--                        {% for m in messages_info %}-->
+<!--                        {% ifnotequal m.msg_created_by_id request.user.id %}-->
+<!--                        <div class="row left-message">-->
+<!--                            <div class="col-sm-6 col-lg-5 col-md-6">-->
+<!--                                {% autoescape off %}-->
+<!--                                <span> {{m.message}}</span>-->
+<!--                                {% endautoescape %}-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="row left-time ">-->
+<!--                            <div class="col-sm-6 col-lg-12 col-md-6">-->
+<!--                                {{m.created_at|timesince}}-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <hr>-->
+<!--                        {% else %}-->
+<!--                         asjhdlkasjldas-->
+<!--                        {% if counts %}-->
+
+<!--                        sinfle-->
+<!--                        <div class="row right-message" style="margin-top:125px;">-->
+<!--                            <div class="offset-8">-->
+<!--                                {% autoescape off %}-->
+<!--                                <span> {{m.message}}</span>-->
+<!--                                {% endautoescape %}-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="row right-time">-->
+<!--                            <div class="offset-8">-->
+<!--                                {{m.created_at|timesince}} ago-->
+<!--                            </div>-->
+<!--                        </div>-->
+
+<!--                         {% else %}-->
+<!--                        else-->
+<!--                         <div class="row right-message">-->
+<!--                            <div class="offset-8">-->
+<!--                                {% autoescape off %}-->
+<!--                                <span> {{m.message}}</span>-->
+<!--                                {% endautoescape %}-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="row right-time">-->
+<!--                            <div class="offset-8">-->
+<!--                                {{m.created_at|timesince}} ago-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        {% endif%}-->
+<!--                        {% endifnotequal %}-->
+<!--                        {% endfor %}-->
+<!--                    </div>-->
+<!--                    {% endif %}-->
+<!--                    {% if caretaker %}-->
+<!--                    <hr><hr><hr>-->
+<!--                 &lt;!&ndash; customer section&ndash;&gt;-->
+
+<!--                <form action="{% url 'customer_message' %}" method="POST">-->
+<!--                {% csrf_token %}-->
+<!--                <input type="hidden" name="ticket" value="{{ticketInfo.id}}">-->
+<!--                <input type="hidden" name="customer" value="{{request.user.id}}">-->
+<!--                 {% for assigner in caretaker %}-->
+<!--                <input type="hidden" name="caretaker" value="{{assigner.caretakerId_id}}">-->
+<!--                {% endfor %}-->
+<!--                <textarea  name="textarea" cols="100" rows="5" placeholder="enter the message" id="description"></textarea>-->
+<!--                <hr>-->
+<!--                <button id="msgbutton" class="btn btn-success">send <i class="fa fa-arrow-right"></i></button>-->
+<!--                </form>-->
+<!--                 {% endif %}-->
+<!--                     &lt;!&ndash; caretaker section&ndash;&gt;-->
+<!--                    {% if caretakerAssignedornot %}-->
+<!--                         <hr>-->
+<!--                    <form action="{% url 'customer_message' %}" method="POST">-->
+<!--                {% csrf_token %}-->
+<!--                <input type="hidden" name="ticket" value="{{ticketInfo.id}}">-->
+<!--                <input type="hidden" name="customer" value="{{request.user.id}}">-->
+<!--                 {% for assigner in caretakerAssignedornot %}-->
+<!--                <input type="hidden" name="caretaker" value="{{assigner.caretakerId_id}}">-->
+<!--                {% endfor %}-->
+<!--                <textarea  name="textarea" cols="100" rows="5" placeholder="enter the message" id="description"></textarea>-->
+<!--                <hr>-->
+
+<!--                <button id="msgbutton" class="btn btn-success">send <i class="fa fa-arrow-right"></i></button>-->
+
+<!--                </form>-->
+<!--                    <div class="row">-->
+<!--                          <form action="{% url 'close_ticket'  %}" method="POST">-->
+<!--                              {% csrf_token %}-->
+<!--                              <input type="hidden" name="ticketId" value="{{ticketInfo.id}}">-->
+<!--                 <button onclick="return confirm ('Alert once you close the ticket it cannot be undo')" class="btn btn-danger">closed ticket</button>(*one the ticket is closeed it cannot be undo )-->
+<!--                          </form>-->
+<!--                    </div>-->
+
+
+<!--                    {% else %}-->
+<!--                    <h5>The ticket has not assigned by anyone </h5>-->
+
+<!--                    {% endif %}-->
+<!--                </div>-->
+
+                 <div class="col-lg-6 col-sm-12 col-md-12">
+                     <div class="container-fluid " id="chat" style="overflow:auto; border:2px solid black; overscroll-behavior-y:contain;height:250px" >
+<!--                         left message shown section-->
+                         <div class="row">
+                                 <span style="padding-top:15vh">sender name.</span>
+                         </div>
+                         <div class="row left-message">
+                             <span>this is first left message</span>
+
+                         </div>
+                         <div class="row">
+
+                                 <span> left side  time</span>
+                         </div>
+
+<!--                         right message shown section -->
+
+                         <div class="row">
+                                 <div class="offset-8">
+                                 <span>receiver name</span>
+                             </div>
+                         </div>
+
                          <div class="row right-message">
-                            <div class="offset-8">
-                                {% autoescape off %}
-                                <span> {{m.message}}</span>
-                                {% endautoescape %}
-                            </div>
-                        </div>
-                        <div class="row right-time">
-                            <div class="offset-8">
-                                {{m.created_at|timesince}} ago
-                            </div>
-                        </div>
-                        {% endif%}
-                        {% endifnotequal %}
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                    {% if caretaker %}
-                    <hr><hr><hr>
-                 <!-- customer section-->
+                             <div class="offset-8">
+                                 <span>this is first right messages</span>
+                             </div>
+                         </div>
+                          <div class="row">
+                                <div class="offset-8">
+                                 <span>right side time</span>
+                             </div>
+                         </div>
+                         <!--                         left message shown section-->
+                         <div class="row">
+                                 <span style="padding-top:15vh">sender name.</span>
+                         </div>
+                         <div class="row left-message">
+                             <span>this is first left message</span>
 
-                <form action="{% url 'customer_message' %}" method="POST">
-                {% csrf_token %}
-                <input type="hidden" name="ticket" value="{{ticketInfo.id}}">
-                <input type="hidden" name="customer" value="{{request.user.id}}">
-                 {% for assigner in caretaker %}
-                <input type="hidden" name="caretaker" value="{{assigner.caretakerId_id}}">
-                {% endfor %}
-                <textarea  name="textarea" cols="100" rows="5" placeholder="enter the message" id="description"></textarea>
-                <hr>
-                <button id="msgbutton" class="btn btn-success">send <i class="fa fa-arrow-right"></i></button>
-                </form>
-                 {% endif %}
-                     <!-- caretaker section-->
-                    {% if caretakerAssignedornot %}
-                         <hr>
+                         </div>
+                         <div class="row">
+
+                                 <span> left side  time</span>
+                         </div>
+
+<!--                         right message shown section -->
+
+                         <div class="row">
+                                 <div class="offset-8">
+                                 <span>receiver name</span>
+                             </div>
+                         </div>
+
+                         <div class="row right-message">
+                             <div class="offset-8">
+                                 <span>this is first right messages</span>
+                             </div>
+                         </div>
+                          <div class="row">
+                                <div class="offset-8">
+                                 <span>right side time</span>
+                             </div>
+                         </div><!--                         left message shown section-->
+                         <div class="row">
+                                 <span style="padding-top:15vh">sender name.</span>
+                         </div>
+                         <div class="row left-message">
+                             <span>this is first left message</span>
+
+                         </div>
+                         <div class="row">
+
+                                 <span> left side  time</span>
+                         </div>
+
+<!--                         right message shown section -->
+
+                         <div class="row">
+                                 <div class="offset-8">
+                                 <span>receiver name</span>
+                             </div>
+                         </div>
+
+                         <div class="row right-message">
+                             <div class="offset-8">
+                                 <span>this is first right messages</span>
+                             </div>
+                         </div>
+                          <div class="row">
+                                <div class="offset-8">
+                                 <span>right side time</span>
+                             </div>
+                         </div><!--                         left message shown section-->
+                         <div class="row">
+                                 <span style="padding-top:15vh">sender name.</span>
+                         </div>
+                         <div class="row left-message">
+                             <span>this is first left message</span>
+
+                         </div>
+                         <div class="row">
+
+                                 <span> left side  time</span>
+                         </div>
+
+<!--                         right message shown section -->
+
+                         <div class="row">
+                                 <div class="offset-8">
+                                 <span>receiver name</span>
+                             </div>
+                         </div>
+
+                         <div class="row right-message">
+                             <div class="offset-8">
+                                 <span>this is first right messages</span>
+                             </div>
+                         </div>
+                          <div class="row">
+                                <div class="offset-8">
+                                 <span>right side time</span>
+                             </div>
+                         </div>
+
+                     </div>
+
+                     <hr>
                     <form action="{% url 'customer_message' %}" method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="ticket" value="{{ticketInfo.id}}">
@@ -166,7 +324,7 @@
                  {% for assigner in caretakerAssignedornot %}
                 <input type="hidden" name="caretaker" value="{{assigner.caretakerId_id}}">
                 {% endfor %}
-                <textarea  name="textarea" cols="100" rows="5" placeholder="enter the message" id="description"></textarea>
+                <textarea  name="textarea" cols="72" rows="5" placeholder="enter the message" id="description"></textarea>
                 <hr>
 
                 <button id="msgbutton" class="btn btn-success">send <i class="fa fa-arrow-right"></i></button>
@@ -180,30 +338,41 @@
                           </form>
                     </div>
 
-
-                    {% else %}
-                    <h5>The ticket has not assigned by anyone </h5>
-
-                    {% endif %}
+                 </div>
 
 
 
-                </div>
+
             </div>
 
+
+
         </div>
+
+
+
     </div>
     <hr>
+
+
 
 </div>
 
 
 {% endblock %}
 {% block 'js' %}
+<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
 <script type="text/javascript">
+
+
+$(document).ready(function(){
+ $('#chat').animate({scrollTop:100000000000},100)
+});
  tinymce.init({
       selector: '#description'
       });
+
+
   </script>
 {% endblock %}
 
