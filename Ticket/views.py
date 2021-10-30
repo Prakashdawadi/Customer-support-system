@@ -47,95 +47,132 @@ def listTicket(request):
 # customer view details view
 @login_required(login_url='customerlogin' or 'caretakerlogin')
 def viewDetails(request,id):
-    ticketInfo = Ticket.objects.get(id=id)
-    if not ticketInfo.status:
-        if request.user.is_Caretaker:
-            messages.add_message(request, messages.ERROR, " Sorry! The ticket is closed")
-            return redirect('solve_ticket_list')
-        else:
-            messages.add_message(request, messages.ERROR, "Sorry! The ticket is closed")
-            return redirect('solved_ticket')
 
-    if request.user.is_Caretaker:
+    try:
+        findId = get_object_or_404(Ticket,id=id)
+        # check whether the ticket is seen by authorized caretaker or not
+        caretaker_details=ticketAssign.objects.select_related('caretakerId').filter(caretakerId=request.user.id, ticketId=id)
+        if request.user.is_Caretaker  and not caretaker_details:
+            messages.add_message(request, messages.ERROR, " you have not assigned this ticket")
+            return redirect('caretakerdashboard')
+        # check whether the customer is authorized to view this ticket or not
+        print(request.user.id)
+        print(findId.created_by_id)
+        if request.user.is_customer and not request.user.id == findId.created_by_id:
+            messages.add_message(request, messages.ERROR, " you have not created this ticket")
+            return redirect('customerdashboard')
 
-        #Cartakers also view the details of all incoming tickets but not assign tickets
-        caretakerAassignedOrNot = ticketAssign.objects .select_related('caretakerId') .filter(caretakerId=request.user.id, ticketId=id)
-        ticketInfo = Ticket.objects.get(id=id)
-        if not ticketInfo.status:
-            messages.add_message(request, messages.ERROR, "the ticket is closed")
-            return redirect('close_ticket')
-
-        if caretakerAassignedOrNot:
-             messages_info= ticketConversation.objects.all().filter(ticket_id=id)
-
-             counts= messages_info.count()
-             if counts == 1:
-                 data = {
-                 'ticketInfo': ticketInfo,
-                 'caretakerAssignedornot': caretakerAassignedOrNot,
-                 'messages_info':messages_info,
-                 'counts':counts,
-                 'ticket_status':ticketInfo.status,
-
-                  }
-                 return render(request, 'customer/ticket/ticket_details.html', data)
-             else:
-                 data = {
-                     'ticketInfo': ticketInfo,
-                     'caretakerAssignedornot': caretakerAassignedOrNot,
-                     'messages_info': messages_info,
-                     'ticket_status':ticketInfo.status,
-                 }
-                 return render(request, 'customer/ticket/ticket_details.html', data)
-
-             return render(request, 'customer/ticket/ticket_details.html', data)
-        else:
-            data = {
-               'ticketInfo': ticketInfo,
-               'caretakerassign': caretakerAassignedOrNot
-            }
-            return render(request, 'customer/ticket/ticket_details.html', data)
-    else:
-        try:
-            #print('before_try')
-            key = get_object_or_404(Ticket,pk=id)
-
-            if not request.user.id == ticketInfo.created_by_id:
-                messages.add_message(request, messages.ERROR, 'Invalid url')
-                return HttpResponseRedirect(reverse('list_ticket'))
+        if not findId.status:
+            if request.user.is_Caretaker:
+                messages.add_message(request, messages.ERROR, " Sorry! The ticket is closed")
+                return redirect('solve_ticket_list')
             else:
-                #user can also view the chatting box after being assigned so check whether that ticket is assigned or not
-                caretaker_info = ticketAssign.objects \
-                .select_related('caretakerId') \
-                .filter(customerId=request.user.id, ticketId=id)
-                ticketInfo = Ticket.objects.get(id=id)
-                messages_info = ticketConversation.objects.all().filter(ticket_id=id)
-                #print("hello")
-                #print(ticketInfo.status)
+                messages.add_message(request, messages.ERROR, "Sorry! The ticket is closed")
+                return redirect('solved_ticket')
 
-                counts = messages_info.count()
-                if counts == 1:
-                    data = {
-                        'ticketInfo': ticketInfo,
-                        'caretaker': caretaker_info,
-                        'messages_info': messages_info,
-                        'counts':counts,
-
-                    }
-                    return render(request, 'customer/ticket/ticket_details.html', data)
-                else:
-                    data = {
-                        'ticketInfo': ticketInfo,
-                        'caretaker': caretaker_info,
-                        'messages_info': messages_info,
-
-                    }
-                    return render(request, 'customer/ticket/ticket_details.html', data)
-                return render(request, 'customer/ticket/ticket_details.html', data)
-        except Exception as e:
-            #print("exceptss")
+    except Exception as e:
             messages.add_message(request, messages.ERROR, e)
             return redirect('list_ticket')
+
+    if request.user.is_Caretaker:
+       caretakerAssignedOrNot=ticketAssign.objects.select_related('caretakerId').filter(caretakerId=request.user.id, ticketId=id)
+       if caretakerAssignedOrNot:
+            #caretaker is assgigned to that ticket now we can display conversation
+            message_info = ticketConversation.objects.filter(ticket_id=id)
+            data = {
+                'caretakerAssignedOrNot':caretakerAssignedOrNot,
+                'ticketInfo':findId,
+                'messages_info':message_info
+            }
+            return render(request, 'customer/ticket/ticket_details.html',data)
+
+       else:
+            #only ticket details seen by careataker
+            data = {
+
+                'ticketInfo': findId
+            }
+            return render(request, 'customer/ticket/ticket_details.html',data)
+
+    else:
+        caretakerAssignedOrNot = ticketAssign.objects.select_related('caretakerId').filter(customerId=request.user.id,
+                                                                                           ticketId=id)
+        if caretakerAssignedOrNot:
+            # caretaker is assgigned to that ticket now we can display conversation
+            message_info = ticketConversation.objects.filter(ticket_id=id)
+            data = {
+                'caretakerAssignedOrNot': caretakerAssignedOrNot,
+                'ticketInfo': findId,
+                'messages_info': message_info
+            }
+            return render(request, 'customer/ticket/ticket_details.html', data)
+
+        else:
+            # only ticket details seen by careataker
+            data = {
+
+                'ticketInfo': findId
+            }
+            return render(request, 'customer/ticket/ticket_details.html', data)
+
+
+
+
+    return render(request, 'customer/ticket/ticket_details.html')
+
+
+
+
+
+
+
+    # caretakerAassignedOrNot = ticketAssign.objects.select_related('caretakerId').filter(caretakerId=request.user.id, ticketId=id)
+    #
+    # if request.user.is_Caretaker:
+    #     #Cartakers also view the details of all incoming tickets but not assign tickets
+    #
+    #     if caretakerAassignedOrNot:
+    #          messages_info= ticketConversation.objects.all().filter(ticket_id=id)
+    #
+    #
+    #          data = {
+    #                  'ticketInfo': ticketInfo,
+    #                  'caretakerAssignedornot': caretakerAassignedOrNot,
+    #                  'messages_info': messages_info,
+    #                  'ticket_status':ticketInfo.status,
+    #              }
+    #          return render(request, 'customer/ticket/ticket_details.html', data)
+    #
+    #
+    #     else:
+    #         data = {
+    #            'ticketInfo': ticketInfo,
+    #            'caretakerassign': caretakerAassignedOrNot
+    #         }
+    #         return render(request, 'customer/ticket/ticket_details.html', data)
+    # else:
+    #     try:
+    #         key = get_object_or_404(Ticket,pk=id)
+    #         if not request.user.id == ticketInfo.created_by_id:
+    #             messages.add_message(request, messages.ERROR, 'Invalid url')
+    #             return HttpResponseRedirect(reverse('list_ticket'))
+    #         else:
+    #             #user can also view the chatting box after being assigned so check whether that ticket is assigned or not
+    #             caretaker_info = ticketAssign.objects \
+    #             .select_related('caretakerId') \
+    #             .filter(customerId=request.user.id, ticketId=id)
+    #             ticketInfo = Ticket.objects.get(id=id)
+    #             messages_info = ticketConversation.objects.all().filter(ticket_id=id)
+    #             data = {
+    #                     'ticketInfo': ticketInfo,
+    #                     'caretaker': caretaker_info,
+    #                     'messages_info': messages_info,
+    #                     'caretakerAssignedornot': caretakerAassignedOrNot,
+    #                 }
+    #             return render(request, 'customer/ticket/ticket_details.html', data)
+    #     except Exception as e:
+    #         messages.add_message(request, messages.ERROR, e)
+    #         return redirect('list_ticket')
 
 @login_required(login_url='caretakerlogin')
 def incomingTicket(request):
